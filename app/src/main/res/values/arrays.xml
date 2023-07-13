@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="notification_sounds">
+        <item>Sound 1</item>
+        <item>Sound 2</item>
+        <item>Sound 3</item>
+        <!-- Add more sound options if needed -->
+    </string-array>
+</resources>
