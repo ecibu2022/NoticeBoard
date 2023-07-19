@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserDashboard extends AppCompatActivity implements  NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawerLayout;
     private FirebaseAuth mAuth;
+    private ImageView userImageView;
+    private View headerView;
+    private TextView userName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +65,38 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                     .commit();
             navigationView.setCheckedItem(R.id.home);
         }
+
+//        Retrieving Users Data in nav view
+        headerView = navigationView.getHeaderView(0);
+        userImageView = headerView.findViewById(R.id.circle_image_view);
+        userName = headerView.findViewById(R.id.full_name);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        DatabaseReference usersRef = database.getReference("users");
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve the user's image URL and name
+                    String imageUrl = dataSnapshot.child("profileImage").getValue(String.class);
+                    String fullName = dataSnapshot.child("fullName").getValue(String.class);
+
+                    // Setting the user's image and name in the navigation drawer layout
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        Glide.with(UserDashboard.this).load(imageUrl).into(userImageView);
+                    }
+                    userName.setText(fullName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any errors that occurred while retrieving the user's data
+            }
+        });
+
 
 
     }
@@ -102,9 +140,7 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                 break;
 
             case R.id.events:
-                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
-                        .replace(R.id.fragment_container, new EventsFragment())
-                        .commit();
+                showEventsOptionsDialog();
                 break;
 
             case R.id.logout:
@@ -137,5 +173,29 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
         });
         logout.show(); // Show the AlertDialog
     }
+    
+//    Events Options Dialog
+private void showEventsOptionsDialog() {
+    String[] options = {"View", "Create"};
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("****EVENTS****");
+    builder.setItems(options, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (which == 0) {
+                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
+                        .replace(R.id.fragment_container, new ViewEventsFragment())
+                        .commit();
+            } else if (which == 1) {
+                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
+                        .replace(R.id.fragment_container, new EventsFragment())
+                        .commit();
+            }
+        }
+    });
+    builder.show();
+}
+
 
 }

@@ -32,7 +32,7 @@ public class AdminDashboard extends AppCompatActivity implements BottomNavigatio
     }
     AdminHomeFragment homeFragment=new AdminHomeFragment();
     AdminStatisticsFragment statisticsFragment=new AdminStatisticsFragment();
-    AdminProfileFragment accountFragment=new AdminProfileFragment();
+    AdminAccountFragment accountFragment=new AdminAccountFragment();
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -45,7 +45,7 @@ public class AdminDashboard extends AppCompatActivity implements BottomNavigatio
                         .commit();
                 return true;
 
-            case R.id.statistics:
+            case R.id.create:
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, statisticsFragment)

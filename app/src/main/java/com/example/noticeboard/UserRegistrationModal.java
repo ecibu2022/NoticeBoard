@@ -1,12 +1,12 @@
 package com.example.noticeboard;
 
 public class UserRegistrationModal {
-    public String fullName, regNO, profileImage, faculty, course, year, email, password, role;
+    public String fullName, regNO, profileImage, faculty, course, year, email, password, role, deviceToken;
 
     public UserRegistrationModal() {
     }
 
-    public UserRegistrationModal(String fullName, String regNO, String profileImage, String faculty, String course, String year, String email, String password, String role) {
+    public UserRegistrationModal(String fullName, String regNO, String profileImage, String faculty, String course, String year, String email, String password, String role, String deviceToken) {
         this.fullName = fullName;
         this.regNO = regNO;
         this.profileImage = profileImage;
@@ -16,6 +16,7 @@ public class UserRegistrationModal {
         this.email = email;
         this.password=password;
         this.role=role;
+        this.deviceToken = deviceToken;
     }
 
     public String getFullName() {
@@ -88,5 +89,13 @@ public class UserRegistrationModal {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }

@@ -37,6 +37,16 @@
                 android:title="Events" />
 
             <item
+                android:id="@+id/trends"
+                android:icon="@drawable/trends"
+                android:title="Trends" />
+
+            <item
+                android:id="@+id/faqs"
+                android:icon="@drawable/faqs"
+                android:title="FAQs" />
+
+            <item
                 android:id="@+id/logout"
                 android:icon="@drawable/logout"
                 android:title="Logout" />

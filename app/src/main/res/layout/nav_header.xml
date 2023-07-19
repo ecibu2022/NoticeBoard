@@ -11,7 +11,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circle_image_view"
         android:layout_width="120dp"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_marginTop="5dp"
         android:src="@drawable/logo" />
 
@@ -20,13 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Full Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:layout_marginTop="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="REG NO"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:layout_marginTop="8dp" />
 

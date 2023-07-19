@@ -49,6 +49,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -62,8 +63,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Register extends AppCompatActivity {
-    String[] faculty={"FCI", "FAST", "Science", "Medicine", "Interdisciplinary Studies"};
-    String[] course={"Information Technology", "Computer Science", "Software Engineering"};
+    String[] faculty={"FCI", "FAST", "Science", "FOM", "FIS"};
+    String[] course={"BIT", "BCS", "BSE"};
     String[] year={"1", "2", "3", "4", "5"};
     AutoCompleteTextView facultyTextView, courseTextView, yearTextView;
     ArrayAdapter<String> myFaculty, myCourse, myYear;
@@ -86,20 +87,29 @@ public class Register extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
 
+    private String deviceToken;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Find the toolbar and set it as the activity's action bar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-//        Arrow back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //        Setting Title in Action Bar
-        getSupportActionBar().setTitle("Create an account");
+        // Obtain the device token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            // Device token obtained successfully
+                            deviceToken = task.getResult();
+                        } else {
+
+                        }
+                    }
+                });
+
 
 //Initializing the Views
         full_name=findViewById(R.id.full_name);
@@ -242,6 +252,7 @@ public class Register extends AppCompatActivity {
 
     }
 
+
     public void uploadDetails(){
         if(imageURI != null){
             String fullName=full_name.getText().toString().trim();
@@ -251,7 +262,7 @@ public class Register extends AppCompatActivity {
             String Year=yearTextView.getText().toString().trim();
             String Email=email.getText().toString().trim();
             String Password=password.getText().toString().trim();
-
+            String Confirm=confirm_password.getText().toString().trim();
 
 //            Validating the Fields
             if(fullName.isEmpty()){
@@ -340,6 +351,10 @@ public class Register extends AppCompatActivity {
                 password.setError("Password Should be at least 6 characters");
                 password.requestFocus();
                 return ;
+            }else if(!Password.equals(Confirm)){
+                confirm_password.setError("Password Mismatched*");
+                confirm_password.requestFocus();
+                return;
             }else {
 //                Check if User Exists or already registered
                 Query checkUserEmail=databaseReference.orderByChild("email").equalTo(Email);
@@ -375,7 +390,7 @@ public class Register extends AppCompatActivity {
     }
 
     private void UploadDetailsToFirebase (Uri uri) {
-        progressDialog.setTitle("Registration in progress");
+        progressDialog.setTitle("Registration in Progress");
         progressDialog.setMessage("Please wait....");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
@@ -398,7 +413,7 @@ public class Register extends AppCompatActivity {
                         String Role="user";
 
                         // Create a new user object with the data
-                        UserRegistrationModal user = new UserRegistrationModal(fullName, REG_NO, uri.toString(), Faculty, Course, Year, Email, hashedPassword, Role);
+                        UserRegistrationModal user = new UserRegistrationModal(fullName, REG_NO, uri.toString(), Faculty, Course, Year, Email, hashedPassword, Role, deviceToken);
 
                         // Get a reference to the "users" node
                         databaseReference.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -552,22 +567,5 @@ public class Register extends AppCompatActivity {
         String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
         return Uri.parse(path);
     }
-
-    //    Arrow Back Button
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(Register.this, Login.class));
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public  void onBackPressed(){
-        startActivity(new Intent(Register.this, Login.class));
-        finish();
-    }
-//End of Back Button
 
 }

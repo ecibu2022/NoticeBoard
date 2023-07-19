@@ -105,13 +105,6 @@ public class Login extends AppCompatActivity {
         loginDialog.setCancelable(false);
         loginDialog.setMessage("Logging In...\nPlease wait");
 
-        // Find the toolbar and set it as the activity's action bar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Set the title for the action bar
-        getSupportActionBar().setTitle("Login");
-
 //        Forgot Password TextView
         forgot_password.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,7 +181,32 @@ public class Login extends AppCompatActivity {
                                                     loginDialog.dismiss();
                                                 }
                                             });
-                                        } else {
+                                        }else if (role != null && role.equals("admin")) {
+                                            // Update the user's email in Firebase Authentication
+                                            currentUser.updateEmail(Email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        // Update the user's email in Realtime Database
+                                                        databaseReference.child(userId).child("email").setValue(Email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                                                    startActivity(new Intent(Login.this, AdminDashboard.class));
+                                                                    finish();
+                                                                } else {
+                                                                    Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+                                                    } else {
+                                                        Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    loginDialog.dismiss();
+                                                }
+                                            });
+                                        }else {
                                             Toast.makeText(Login.this, "Login Failed. Please try again", Toast.LENGTH_SHORT).show();
                                             loginDialog.dismiss();
                                         }

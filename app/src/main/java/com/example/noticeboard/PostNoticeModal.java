@@ -1,12 +1,16 @@
 package com.example.noticeboard;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class PostNoticeModal {
+public class PostNoticeModal implements Parcelable {
+    private String id;
     private String title;
     private String body;
-    private List<String> imageUrls;
-    private List<String> fileUrls;
+    private String imageUrl;
+    private String fileUrl;
     private String everyone;
     private String faculty;
     private String course;
@@ -14,16 +18,18 @@ public class PostNoticeModal {
     private String terms;
     private String submittedBy;
     private String dateTime;
+    private String key;
+    private int likeCount;
 
     public PostNoticeModal() {
         // Empty constructor required for Firebase
     }
 
-    public PostNoticeModal(String title, String body, List<String> imageUrls, List<String> fileUrls, String everyone, String faculty, String course, String year, String terms, String submittedBy, String dateTime) {
+    public PostNoticeModal(String id, String title, String body, String imageUrl, String fileUrl, String everyone, String faculty, String course, String year, String terms, String submittedBy, String dateTime) {
         this.title = title;
         this.body = body;
-        this.imageUrls = imageUrls;
-        this.fileUrls = fileUrls;
+        this.imageUrl = imageUrl;
+        this.fileUrl = fileUrl;
         this.everyone = everyone;
         this.faculty = faculty;
         this.course = course;
@@ -31,7 +37,30 @@ public class PostNoticeModal {
         this.terms = terms;
         this.submittedBy = submittedBy;
         this.dateTime = dateTime;
+        this.id = id;
     }
+
+    protected PostNoticeModal(Parcel in) {
+        title = in.readString();
+        body = in.readString();
+        submittedBy = in.readString();
+        dateTime = in.readString();
+        fileUrl = in.readString();
+        imageUrl = in.readString();
+    }
+
+    public static final Creator<PostNoticeModal> CREATOR = new Creator<PostNoticeModal>() {
+        @Override
+        public PostNoticeModal createFromParcel(Parcel in) {
+            return new PostNoticeModal(in);
+        }
+
+        @Override
+        public PostNoticeModal[] newArray(int size) {
+            return new PostNoticeModal[size];
+        }
+    };
+
 
     public String getTitle() {
         return title;
@@ -49,15 +78,13 @@ public class PostNoticeModal {
         this.body = body;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
-
-
 
     public String getEveryone() {
         return everyone;
@@ -115,11 +142,51 @@ public class PostNoticeModal {
         this.dateTime = dateTime;
     }
 
-    public List<String> getFileUrls() {
-        return fileUrls;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setFileUrls(List<String> fileUrls) {
-        this.fileUrls = fileUrls;
+    public void setFileUrls(String fileUrls) {
+        this.fileUrl = fileUrl;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(body);
+        dest.writeString(submittedBy);
+        dest.writeString(dateTime);
+        dest.writeString(fileUrl);
+        dest.writeString(imageUrl);
+    }
+
 }

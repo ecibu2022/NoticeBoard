@@ -79,7 +79,7 @@ public class UserHomeFragment extends Fragment {
                     String course = snapshot.child("course").getValue(String.class);
                     String year = snapshot.child("year").getValue(String.class);
 
-                    DatabaseReference noticesRef = FirebaseDatabase.getInstance().getReference("Notices");
+                    DatabaseReference noticesRef = FirebaseDatabase.getInstance().getReference("approved_notices");
 
                     // Query notices accessible to everyone
                     Query everyoneNoticesQuery = noticesRef.orderByChild("everyone").equalTo("Everyone");
@@ -135,7 +135,7 @@ public class UserHomeFragment extends Fragment {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                     if (!noticeIds.contains(itemSnapshot.getKey())) {
                         PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
-                        if (notice != null && notice.getCourse().equals(course)) {
+                        if (notice != null && course.equals(notice.getCourse())) {
                             // Check if the notice is meant for the user's course
                             notices.add(notice);
                             noticeIds.add(itemSnapshot.getKey());
@@ -156,6 +156,7 @@ public class UserHomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to retrieve faculty-specific notices", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void filterNoticesByCourse(DatabaseReference noticesRef, String facultyName, String course, String year) {

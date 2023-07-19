@@ -26,9 +26,9 @@
     <string name="share">Share</string>
     <string name="reg_no">REG NO</string>
     <string name="title_of_notice">Title of Notice</string>
-    <string name="images">Image(s) [optional]</string>
-    <string name="file">Attach file(s) [optional]</string>
-    <string name="selected">Selected Files: None</string>
+    <string name="images">Attach Image [optional]</string>
+    <string name="file">Attach file [optional]</string>
+    <string name="selected">Selected File: None</string>
     <string name="file_name">No file selected</string>
     <string name="declaration">I declare that the above notice is true</string>
     <string name="post">Post Notice</string>

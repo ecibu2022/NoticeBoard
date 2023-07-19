@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".AdminHomeFragment">
 
-    <TextView
+    <!-- Use a RelativeLayout to contain the RecyclerView and CircleImageView -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Admin Home" />
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <!-- Use layout_gravity to position the CircleImageView at the top right corner -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/logout"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:src="@drawable/logout"
+            android:layout_marginLeft="430dp"
+            android:layout_gravity="end" />
+
+    </RelativeLayout>
+
+    <!-- Use layout_weight to allow the RecyclerView to fill the remaining space -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
