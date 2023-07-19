@@ -55,6 +55,8 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
         String fileUrl = notice.getFileUrl();
         if (fileUrl != null) {
             StringBuilder fileLinksBuilder = new StringBuilder();
+            // Append the fileUrl to the fileLinksBuilder
+            fileLinksBuilder.append(fileUrl).append("\n");
             holder.fileLinks.setText(fileLinksBuilder.toString());
             holder.fileLinks.setVisibility(View.VISIBLE);
         } else {
@@ -62,9 +64,10 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
         }
 
         if (notice.getImageUrl() != null && !notice.getImageUrl().isEmpty()) {
-//            Glide.with(context).load(notice.getImageUrl()).into();
+            Glide.with(context).load(notice.getImageUrl()).into(holder.noticeImage);
+            holder.noticeImage.setVisibility(View.VISIBLE);
         } else {
-//            holder.noticeImagesRecyclerView.setVisibility(View.GONE);
+            holder.noticeImage.setVisibility(View.GONE);
         }
 
         // Working on approve notice button
@@ -139,6 +142,7 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView noticeTitle, noticeBody, postedBy, dateTime, fileLinks;
         private MaterialButton approveNotice;
+        private ImageView noticeImage;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -148,6 +152,7 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
             postedBy = itemView.findViewById(R.id.postedBy);
             dateTime = itemView.findViewById(R.id.dateTime);
             fileLinks = itemView.findViewById(R.id.fileLinks);
+            noticeImage=itemView.findViewById(R.id.noticeImage);
             approveNotice = itemView.findViewById(R.id.approveNotice);
         }
     }

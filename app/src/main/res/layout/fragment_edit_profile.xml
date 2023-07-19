@@ -31,7 +31,7 @@
                     <ImageView
                         android:id="@+id/profile_picture"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="230dp"
                         app:srcCompat="@drawable/logo"
                         android:scaleType="fitXY"
                         />
@@ -224,7 +224,7 @@
                             <ImageView
                                 android:id="@+id/editImage"
                                 android:layout_width="match_parent"
-                                android:layout_height="194dp"
+                                android:layout_height="220dp"
                                 app:srcCompat="@drawable/upload"
                                 android:scaleType="fitXY"
                                 />

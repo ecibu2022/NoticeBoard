@@ -16,10 +16,13 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/noticeRecyclerView"
+            <ImageView
+                android:id="@+id/noticeImage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="200dp"
+                android:src="@drawable/logo"
+                app:cornerRadius="8dp"
+                android:scaleType="fitXY"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

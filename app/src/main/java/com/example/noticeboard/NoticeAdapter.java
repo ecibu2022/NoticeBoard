@@ -42,16 +42,13 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         PostNoticeModal notice = notices.get(position);
         holder.noticeTitle.setText(notice.getTitle());
-        holder.noticeBody.setText(notice.getBody());
         holder.postedBy.setText("Posted by " + notice.getSubmittedBy());
         holder.dateTime.setText("On " + notice.getDateTime());
 
         // Set file URL to the fileLinks TextView
         String fileUrl = notice.getFileUrl();
         if (fileUrl != null && !fileUrl.isEmpty()) {
-            holder.fileLinks.setText(notice.getFileUrl());
-            holder.fileLinks.setVisibility(View.VISIBLE);
-            setFileLinksClickListener(holder.fileLinks, fileUrl);
+            holder.fileLinks.setVisibility(View.GONE);
         } else {
             holder.fileLinks.setVisibility(View.GONE);
         }
@@ -96,29 +93,6 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
             fileLinks = itemView.findViewById(R.id.fileLinks);
             noticeImage = itemView.findViewById(R.id.noticeImage);
         }
-    }
-
-    private void setFileLinksClickListener(TextView fileLinksTextView, String fileUrl) {
-        fileLinksTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an intent to view the file
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-                viewIntent.setData(Uri.parse(fileUrl));
-
-                // Check if there is an app available to handle the view intent
-                if (viewIntent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(viewIntent);
-                } else {
-                    // If no suitable app is found, initiate download using DownloadManager
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
-                    request.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0");
-
-                    DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                    downloadManager.enqueue(request);
-                }
-            }
-        });
     }
 
 }

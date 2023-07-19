@@ -5,6 +5,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,8 +33,7 @@ import java.util.List;
 
 @ExperimentalBadgeUtils public class NoticeDetails extends AppCompatActivity {
     private TextView noticeTitle, noticeBody, fileLinks, postedBy, dateTime;
-    private ImageView noticeImage;
-    private ImageView likeImageView, shareImageView, commentImageView;
+    private ImageView noticeImage, likeImageView, shareImageView, commentImageView;
     private DatabaseReference trendsRef;
     private boolean isLiked = false;
     PostNoticeModal notice;
@@ -46,6 +47,7 @@ import java.util.List;
         notice = getIntent().getParcelableExtra("notice");
 
         // Set the notice content to the respective views in the layout
+        noticeImage=findViewById(R.id.noticeImage);
         noticeTitle = findViewById(R.id.noticeTitle);
         noticeBody = findViewById(R.id.noticeBody);
         fileLinks = findViewById(R.id.fileLinks);
@@ -66,6 +68,7 @@ import java.util.List;
         if (fileUrl != null && !fileUrl.isEmpty()) {
             fileLinks.setText(notice.getFileUrl());
             fileLinks.setVisibility(View.VISIBLE);
+            setFileLinksClickListener(fileLinks, fileUrl);
         } else {
             fileLinks.setVisibility(View.GONE);
         }
@@ -97,42 +100,37 @@ import java.util.List;
         }
 
         // Share Notice
-//        shareImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // Share the notice with other apps using the Android sharing functionality
-//                Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-//                shareIntent.setType("*/*");
-//                shareIntent.putExtra(Intent.EXTRA_TEXT, notice.getTitle() + "\n\n" + notice.getBody());
-//
-//                ArrayList<Uri> fileUris = new ArrayList<>();
-//
-//                // Add image URIs to the share intent
-//                List<String> imageUrls = notice.getImageUrls();
-//                if (imageUrls != null && !imageUrls.isEmpty()) {
-//                    for (String imageUrl : imageUrls) {
-//                        // Convert image URL to Uri
-//                        Uri imageUri = Uri.parse(imageUrl);
-//                        fileUris.add(imageUri);
-//                    }
-//                }
-//
-//                // Add file URIs to the share intent
-//                List<String> fileUrls = notice.getFileUrls();
-//                if (fileUrls != null && !fileUrls.isEmpty()) {
-//                    for (String fileUrl : fileUrls) {
-//                        // Convert file URL to Uri
-//                        Uri fileUri = Uri.parse(fileUrl);
-//                        fileUris.add(fileUri);
-//                    }
-//                }
-//
-//                // Set the list of file URIs to the share intent
-//                shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, fileUris);
-//
-//                startActivity(Intent.createChooser(shareIntent, "Share Notice"));
-//            }
-//        });
+        shareImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Share the notice with other apps using the Android sharing functionality
+                Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                shareIntent.setType("*/*");
+
+                // Add notice title and body to the share intent as text
+                shareIntent.putExtra(Intent.EXTRA_TEXT, notice.getTitle() + "\n\n" + notice.getBody());
+
+                ArrayList<Uri> fileUris = new ArrayList<>();
+
+                // Add image URI to the fileUris list
+                if (notice.getImageUrl() != null && !notice.getImageUrl().isEmpty()) {
+                    Uri imageUri = Uri.parse(notice.getImageUrl());
+                    fileUris.add(imageUri);
+                }
+
+                // Add file URI to the fileUris list
+                String fileUrl = notice.getFileUrl();
+                if (fileUrl != null && !fileUrl.isEmpty()) {
+                    Uri fileUri = Uri.parse(fileUrl);
+                    fileUris.add(fileUri);
+                }
+
+                // Set the list of file URIs to the share intent
+                shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, fileUris);
+
+                startActivity(Intent.createChooser(shareIntent, "Share Notice"));
+            }
+        });
 
 
         // Set up the like button click listener
@@ -240,6 +238,30 @@ import java.util.List;
         badgeDrawable.setNumber(likeCount);
         BadgeUtils.attachBadgeDrawable(badgeDrawable, likeImageView, null);
     }
+
+    private void setFileLinksClickListener(TextView fileLinksTextView, String fileUrl) {
+        fileLinksTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an intent to view the file
+                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                viewIntent.setData(Uri.parse(fileUrl));
+
+                // Check if there is an app available to handle the view intent
+                if (viewIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(viewIntent);
+                } else {
+                    // If no suitable app is found, initiate download using DownloadManager
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
+                    request.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0");
+
+                    DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                    downloadManager.enqueue(request);
+                }
+            }
+        });
+    }
+
 
 
     @Override
