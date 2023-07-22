@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,7 +45,7 @@ public class ViewEventsFragment extends Fragment {
 
         myEvents = view.findViewById(R.id.availableEvents);
         myEvents.setHasFixedSize(true);
-        myEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+        myEvents.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         events = new ArrayList<>();
 

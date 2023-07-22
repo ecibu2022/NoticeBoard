@@ -10,21 +10,10 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class FirebaseCloudMessagingService extends FirebaseMessagingService {
-    @Override
-    public void onNewToken(String token) {
-        super.onNewToken(token);
-    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -37,12 +26,12 @@ public class FirebaseCloudMessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(String title, String message) {
-        Intent intent=new Intent(this, UserDashboard.class);
-        String channel_id="notification_channel";
+        Intent intent = new Intent(this, Login.class);
+        String channel_id = "notification_channel";
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder builder=new NotificationCompat.Builder(this, channel_id)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id)
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -50,15 +39,20 @@ public class FirebaseCloudMessagingService extends FirebaseMessagingService {
                 .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);;
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManager manager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel notificationChannel=new NotificationChannel(channel_id, "Notification_Channel", NotificationManager.IMPORTANCE_HIGH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(channel_id, "Notification_Channel", NotificationManager.IMPORTANCE_HIGH);
             manager.createNotificationChannel(notificationChannel);
         }
         manager.notify(0, builder.build());
     }
 
+    @Override
+    public void onNewToken(String token) {
+        // Handle the device token here
+        Log.d("Token", "Refreshed token: " + token);
+    }
 }

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,30 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdapter.MyViewHolder> {
     private ArrayList<PostNoticeModal> notices;
@@ -107,8 +125,8 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        // Send a notification to the receiver
-                                                        // sendNotificationToReceiver(notice);
+                                                        // Sending a notification to the target audience
+                                                        sendNotificationToTargetAudience(key);
 
                                                         // Remove the notice from the list using its noticeId
                                                         for (int i = 0; i < notices.size(); i++) {
@@ -214,5 +232,217 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
             notifyItemRangeChanged(position, notices.size());
         }
     }
+
+//    Send Notification to Target Audience
+private void sendNotificationToTargetAudience(String noticeId) {
+    DatabaseReference noticeRef = FirebaseDatabase.getInstance().getReference("Notices").child(noticeId);
+    noticeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // Get the target audience from the notice
+            String targetAudience = dataSnapshot.child("everyone").getValue(String.class);
+
+            // Query the users with the specified target audience from the database
+            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+            // If the target audience is everyone, query all users with the user role
+            queryUsersByRole("user");
+
+            if ("everyone".equals(targetAudience)) {
+                queryAllUsers();
+            } else {
+                // If the target audience is not everyone, query based on faculty, course, and year
+                String faculty = dataSnapshot.child("faculty").getValue(String.class);
+                String course = dataSnapshot.child("course").getValue(String.class);
+                String year = dataSnapshot.child("year").getValue(String.class);
+
+                if (faculty != null && !faculty.isEmpty() && course != null && !course.isEmpty() && year != null && !year.isEmpty()) {
+                    // Query based on faculty, course, and year
+                    queryUsersByFacultyCourseYear(faculty, course, year);
+                } else if (faculty != null && !faculty.isEmpty() && course != null && !course.isEmpty()) {
+                    // Query based on faculty and course
+                    queryUsersByFacultyCourse(faculty, course);
+                } else {
+                    // Query based on faculty only
+                    queryUsersByFaculty(faculty);
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            // Handle any database error that occurred while fetching the data
+        }
+    });
+}
+
+    // Query users based on their role
+    private void queryUsersByRole(String role) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        Query roleQuery = usersRef.orderByChild("role").equalTo(role);
+
+        roleQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Send notifications to the retrieved users
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userToken = userSnapshot.child("deviceToken").getValue(String.class);
+                    if (userToken != null) {
+                        // Send the notification using FCM
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any database error that occurred while fetching the data
+            }
+        });
+    }
+
+    // Query all users
+    private void queryAllUsers() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Send notifications to all users
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userToken = userSnapshot.child("deviceToken").getValue(String.class);
+                    if (userToken != null) {
+                        // Send the notification using FCM
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    // Query users based on faculty, course, and year
+    private void queryUsersByFacultyCourseYear(String faculty, String course, String year) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        Query facultyCourseYearQuery = usersRef.orderByChild("faculty").equalTo(faculty)
+                .orderByChild("course").equalTo(course)
+                .orderByChild("year").equalTo(year);
+
+        facultyCourseYearQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Send notifications to the retrieved users
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userToken = userSnapshot.child("deviceToken").getValue(String.class);
+                    if (userToken != null) {
+                        // Send the notification using FCM
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any database error that occurred while fetching the data
+            }
+        });
+    }
+
+    // Query users based on faculty and course
+    private void queryUsersByFacultyCourse(String faculty, String course) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        Query facultyCourseQuery = usersRef.orderByChild("faculty").equalTo(faculty)
+                .orderByChild("course").equalTo(course);
+
+        facultyCourseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Send notifications to the retrieved users
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userToken = userSnapshot.child("deviceToken").getValue(String.class);
+                    if (userToken != null) {
+                        // Send the notification using FCM
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any database error that occurred while fetching the data
+            }
+        });
+    }
+
+    // Query users based on faculty only
+    private void queryUsersByFaculty(String faculty) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        Query facultyQuery = usersRef.orderByChild("faculty").equalTo(faculty);
+
+        facultyQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Send notifications to the retrieved users
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userToken = userSnapshot.child("deviceToken").getValue(String.class);
+                    if (userToken != null) {
+                        // Send the notification using FCM
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any database error that occurred while fetching the data
+            }
+        });
+    }
+
+private void sendFCMNotification(String userToken, String title, String body) {
+        // Set the FCM server key from Firebase Console
+        String serverKey = "AAAASxz6AZI:APA91bELTl9eqIThc_9kJ3eTYWUYoLtVr1H9MS3AQHHKtSQOPa237wk6VNoRKZMeZqEFy9gh_xxS0zw_CekNpcw-NuAlLohCB_etwwC5GNw_il-Hz39L9sv5IuCHoEdiLvKcICxtli5_";
+
+        // Create the FCM message data payload (customize as needed)
+        Map<String, String> data = new HashMap<>();
+        data.put("title", title);
+        data.put("body", body);
+
+        // Create the FCM message body
+        Map<String, Object> message = new HashMap<>();
+        message.put("to", userToken);
+        message.put("data", data);
+
+        // Send the FCM message using OkHttp
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody requestBody = RequestBody.create(mediaType, new Gson().toJson(message));
+        Request request = new Request.Builder()
+                .url("https://fcm.googleapis.com/fcm/send")
+                .post(requestBody)
+                .addHeader("Authorization", "key=" + serverKey)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e("FCM", "Failed to send notification to user", e);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("FCM", "Notification sent to user");
+                } else {
+                    Log.e("FCM", "Failed to send notification to user");
+                }
+                response.close();
+            }
+        });
+    }
+
 
 }

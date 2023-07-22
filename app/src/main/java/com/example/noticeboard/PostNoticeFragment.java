@@ -57,15 +57,28 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class PostNoticeFragment extends Fragment {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
@@ -133,16 +146,6 @@ public class PostNoticeFragment extends Fragment {
         facultyTextView.setAdapter(myFaculty);
         courseTextView.setAdapter(myCourse);
         yearTextView.setAdapter(myYear);
-
-        // Create a notification channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("channel_id", "NoticeBoard", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("Online Notice Board");
-
-            // Register the channel with the system
-            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
 
 //        Choose image
         uploadImage.setOnClickListener(new View.OnClickListener() {
@@ -312,7 +315,7 @@ public class PostNoticeFragment extends Fragment {
         });
     }
 
-    // Send Notification to admin
+//    Send Notification To Admin
     private void sendNotificationToAdmin(String noticeTitle) {
         adminTokenRef = FirebaseDatabase.getInstance().getReference().child("users");
         Query adminQuery = adminTokenRef.orderByChild("role").equalTo("admin");
@@ -325,32 +328,8 @@ public class PostNoticeFragment extends Fragment {
                     Log.d("Admin Token: ", adminToken);
                     Log.d("Role", name);
                     if (adminToken != null) {
-                        // Create an Intent for the activity you want to open when the notification is clicked
-                        Intent intent=new Intent(getContext(), AdminHomeFragment.class);
-                        String channel_id="notification_channel";
-                        intent.putExtra("title", "New Notice Posted");
-                        intent.putExtra("message", noticeTitle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent=PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-                        NotificationCompat.Builder builder=new NotificationCompat.Builder(getContext(), channel_id)
-                                .setSmallIcon(R.drawable.logo)
-                                .setContentTitle("New Notice")
-                                .setContentText(noticeTitle)
-                                .setAutoCancel(true)
-                                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
-                                .setOnlyAlertOnce(true)
-                                .setContentIntent(pendingIntent)
-                                .setPriority(NotificationCompat.PRIORITY_HIGH);;
-
-                        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                            NotificationChannel notificationChannel=new NotificationChannel(channel_id, "Notification_Channel", NotificationManager.IMPORTANCE_HIGH);
-                            manager.createNotificationChannel(notificationChannel);
-                        }
-                        manager.notify(0, builder.build());
-
+                        // Send the notification using FCM
+                        sendFCMNotificationToAdmin(adminToken, noticeTitle);
                     }
                 }
             }
@@ -358,6 +337,49 @@ public class PostNoticeFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle any database error that occurred while fetching the data
+            }
+        });
+    }
+
+    private void sendFCMNotificationToAdmin(String adminToken, String notificationTitle) {
+        // Set the FCM server key from Firebase Console
+        String serverKey = "AAAASxz6AZI:APA91bELTl9eqIThc_9kJ3eTYWUYoLtVr1H9MS3AQHHKtSQOPa237wk6VNoRKZMeZqEFy9gh_xxS0zw_CekNpcw-NuAlLohCB_etwwC5GNw_il-Hz39L9sv5IuCHoEdiLvKcICxtli5_";
+
+        // Create the FCM message data payload (customize as needed)
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "New Notice Posted");
+        data.put("body", notificationTitle);
+
+        // Create the FCM message body
+        Map<String, Object> message = new HashMap<>();
+        message.put("to", adminToken);
+        message.put("data", data);
+
+        // Send the FCM message using OkHttp
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, new Gson().toJson(message));
+        Request request = new Request.Builder()
+                .url("https://fcm.googleapis.com/fcm/send")
+                .post(body)
+                .addHeader("Authorization", "key=" + serverKey)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e("FCM", "Failed to send notification to admin", e);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("FCM", "Notification sent to admin");
+                } else {
+                    Log.e("FCM", "Failed to send notification to admin");
+                }
+                response.close();
             }
         });
     }
