@@ -314,39 +314,43 @@ public class PostNoticeFragment extends Fragment {
 
     // Send Notification to admin
     private void sendNotificationToAdmin(String noticeTitle) {
-        // Reference to the "users" node in the database
         adminTokenRef = FirebaseDatabase.getInstance().getReference().child("users");
-
-        // Query to filter users with role "admin"
-        Query adminQuery = usersRef.orderByChild("role").equalTo("admin");
-
-        // Add a listener to retrieve the "deviceToken" for each admin user
+        Query adminQuery = adminTokenRef.orderByChild("role").equalTo("admin");
         adminQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot adminSnapshot : dataSnapshot.getChildren()) {
-                    // Get the "deviceToken" value for each admin user
                     String adminToken = adminSnapshot.child("deviceToken").getValue(String.class);
-                    // Use the deviceToken for further processing
-                    // (e.g., sending notifications to each admin's device)
+                    String name = adminSnapshot.child("role").getValue(String.class);
                     Log.d("Admin Token: ", adminToken);
+                    Log.d("Role", name);
                     if (adminToken != null) {
                         // Create an Intent for the activity you want to open when the notification is clicked
-                        Intent intent = new Intent(getContext(), MainActivity.class);
+                        Intent intent=new Intent(getContext(), AdminHomeFragment.class);
+                        String channel_id="notification_channel";
+                        intent.putExtra("title", "New Notice Posted");
+                        intent.putExtra("message", noticeTitle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent pendingIntent=PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-                        // Create the notification
-                        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getContext(), "channel_id")
+                        NotificationCompat.Builder builder=new NotificationCompat.Builder(getContext(), channel_id)
                                 .setSmallIcon(R.drawable.logo)
-                                .setContentTitle("New Notice Posted")
-                                .setContentText(" " + noticeTitle)
+                                .setContentTitle("New Notice")
+                                .setContentText(noticeTitle)
                                 .setAutoCancel(true)
-                                .setContentIntent(pendingIntent);
+                                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
+                                .setOnlyAlertOnce(true)
+                                .setContentIntent(pendingIntent)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH);;
 
-                        // Get an instance of the NotificationManagerCompat and show the notification
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
-                        notificationManager.notify(0, notificationBuilder.build());
+                        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                            NotificationChannel notificationChannel=new NotificationChannel(channel_id, "Notification_Channel", NotificationManager.IMPORTANCE_HIGH);
+                            manager.createNotificationChannel(notificationChannel);
+                        }
+                        manager.notify(0, builder.build());
+
                     }
                 }
             }
@@ -356,11 +360,6 @@ public class PostNoticeFragment extends Fragment {
                 // Handle any database error that occurred while fetching the data
             }
         });
-    }
-
-    // Define the TokenCallback interface
-    interface TokenCallback {
-        void onTokenReceived(String deviceToken);
     }
 
     // Clearing Fields

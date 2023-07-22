@@ -23,14 +23,6 @@
             android:layout_marginEnd="32dp"
             android:text="Enable Event Notifications" />
 
-        <CheckBox
-            android:id="@+id/checkBoxUpdateNotifications"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:text="Enable Update Notifications" />
-
         <!-- Quiet Hours -->
         <TextView
             android:layout_width="match_parent"
@@ -50,6 +42,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/startTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start Time: "
@@ -71,6 +64,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/endTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="End Time: "
@@ -82,6 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="End Time" />
+
         </LinearLayout>
 
         <!-- Sound and Vibration Settings -->
@@ -94,16 +89,27 @@
             android:textStyle="bold"
             android:paddingTop="16dp"
             android:paddingBottom="8dp" />
-
-    <Spinner
-        android:id="@+id/spinnerNotificationSounds"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:prompt="@string/select_notification_sound"
-        android:entries="@array/notification_sounds" />
+        android:orientation="horizontal">
 
+    <TextView
+        android:id="@+id/sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sound Name"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SET" />
+
+    </LinearLayout>
 
     <CheckBox
             android:id="@+id/checkBoxVibration"
@@ -111,7 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:text="Enable Vibration" />
+            android:text="Enable Sound" />
 
         <!-- Save Button -->
         <Button

@@ -1,6 +1,11 @@
 package com.example.noticeboard;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ViewEventsFragment extends Fragment {
     private RecyclerView myEvents;
@@ -63,6 +69,8 @@ public class ViewEventsFragment extends Fragment {
                 }
                 eventsAdapter.notifyDataSetChanged();
                 progressDialog.dismiss();
+                // Schedule alarms after updating the events list
+                scheduleEventAlarms();
             }
 
             @Override
@@ -74,4 +82,79 @@ public class ViewEventsFragment extends Fragment {
 
         return view;
     }
+
+    private void scheduleEventAlarms() {
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+
+        for (CreateEventsModal event : events) {
+            // Check if event notifications are enabled in the settings
+            if (isEventNotificationsEnabled()) {
+                String eventTime = event.getStartTime();
+                long eventTimeInMillis = convertTimeToMillis(eventTime);
+
+                // Creating an Intent for the AlarmReceiver class that will handle the alarm
+                Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
+
+                int uniqueId = generateUniqueId();
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), uniqueId, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                alarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+            }
+        }
+    }
+
+    private boolean isEventNotificationsEnabled() {
+        // Load event notifications checkbox state from SharedPreferences
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MySettings", Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean("eventNotificationsEnabled", true);
+    }
+
+
+//    private void scheduleEventAlarms() {
+//        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+//
+//        for (CreateEventsModal event : events) {
+//            String eventTime = event.getStartTime();
+//            long eventTimeInMillis = convertTimeToMillis(eventTime);
+//
+//            // Creating an Intent for the AlarmReceiver class that will handle the alarm
+//            Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
+//
+//            int uniqueId = generateUniqueId();
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), uniqueId, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//            alarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+//        }
+//    }
+
+    private long convertTimeToMillis(String time) {
+        String[] timeParts = time.split(":");
+        int hour = Integer.parseInt(timeParts[0]);
+        int minute = Integer.parseInt(timeParts[1]);
+
+        // Get the current date
+        Calendar calendar = Calendar.getInstance();
+        long currentTimeInMillis = calendar.getTimeInMillis();
+
+        // Set the time from "HH:mm" format
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long eventTimeInMillis = calendar.getTimeInMillis();
+
+        // Check if the event time is in the past, if so, add one day to the event time
+        if (eventTimeInMillis < currentTimeInMillis) {
+            eventTimeInMillis += AlarmManager.INTERVAL_DAY;
+        }
+
+        return eventTimeInMillis;
+    }
+
+
+    private int generateUniqueId() {
+        return (int) System.currentTimeMillis();
+    }
+
 }

@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AdminHomeFragment">
+    tools:context=".AdminHomeFragment"
+    android:background="@color/notice_bg_color">
 
-    <!-- Use a RelativeLayout to contain the RecyclerView and CircleImageView -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Use layout_gravity to position the CircleImageView at the top right corner -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/logout"
             android:layout_width="match_parent"
@@ -22,7 +21,6 @@
 
     </RelativeLayout>
 
-    <!-- Use layout_weight to allow the RecyclerView to fill the remaining space -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notices"
         android:layout_width="match_parent"

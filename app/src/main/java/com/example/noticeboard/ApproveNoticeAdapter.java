@@ -1,7 +1,9 @@
 package com.example.noticeboard;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,61 +76,77 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
         holder.approveNotice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Check if the notices list is empty or not
-                if (notices.isEmpty()) {
-                    Toast.makeText(context, "No notices to approve", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                AlertDialog.Builder approve=new AlertDialog.Builder(context);
+                approve.setTitle("Are you sure you want to approve this notice!");
+                approve.setMessage("#####Please Confirm?#####");
+                approve.setCancelable(false);
+                approve.setPositiveButton("Approve", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Check if the notices list is empty or not
+                        if (notices.isEmpty()) {
+                            Toast.makeText(context, "No notices to approve", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                final PostNoticeModal notice = notices.get(position);
-                final int clickedPosition = position;
-                key = notice.getId();
+                        final PostNoticeModal notice = notices.get(position);
+                        final int clickedPosition = position;
+                        key = notice.getId();
 
-                // Submit notice to the "approved_notices" node with the noticeId as the key
-                DatabaseReference approvedNoticeRef = FirebaseDatabase.getInstance().getReference("approved_notices")
-                        .child(key); // Use the noticeId as the key for the approved notice
-                approvedNoticeRef.setValue(notice)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // Delete the notice from the admin home
-                                DatabaseReference adminHomeRef = FirebaseDatabase.getInstance().getReference("Notices");
-                                // Delete the notice from the admin home
-                                adminHomeRef.child(key).removeValue()
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                // Send a notification to the receiver
-                                                // sendNotificationToReceiver(notice);
+                        // Submit notice to the "approved_notices" node with the noticeId as the key
+                        DatabaseReference approvedNoticeRef = FirebaseDatabase.getInstance().getReference("approved_notices")
+                                .child(key); // Use the noticeId as the key for the approved notice
+                        approvedNoticeRef.setValue(notice)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Delete the notice from the admin home
+                                        DatabaseReference adminHomeRef = FirebaseDatabase.getInstance().getReference("Notices");
+                                        // Delete the notice from the admin home
+                                        adminHomeRef.child(key).removeValue()
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        // Send a notification to the receiver
+                                                        // sendNotificationToReceiver(notice);
 
-                                                // Remove the notice from the list using its noticeId
-                                                for (int i = 0; i < notices.size(); i++) {
-                                                    if (notices.get(i).getId().equals(key)) {
-                                                        notices.remove(i);
-                                                        break;
+                                                        // Remove the notice from the list using its noticeId
+                                                        for (int i = 0; i < notices.size(); i++) {
+                                                            if (notices.get(i).getId().equals(key)) {
+                                                                notices.remove(i);
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        notifyDataSetChanged(); // Refresh the RecyclerView
+                                                        Toast.makeText(context, "Notice Approved", Toast.LENGTH_SHORT).show();
                                                     }
-                                                }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(context, "Failed to delete notice from admin home", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
 
-                                                notifyDataSetChanged(); // Refresh the RecyclerView
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Failed to submit notice to approved notices", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+                approve.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(context, "Notice NOT Approved", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                approve.show();
 
-                                                Toast.makeText(context, "Notice Approved", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(context, "Failed to delete notice from admin home", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Failed to submit notice to approved notices", Toast.LENGTH_SHORT).show();
-                            }
-                        });
             }
         });
 
@@ -196,6 +214,5 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
             notifyItemRangeChanged(position, notices.size());
         }
     }
-
 
 }

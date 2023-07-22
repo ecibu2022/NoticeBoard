@@ -169,7 +169,7 @@ public class EventsFragment extends Fragment {
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-        CreateEventsModal createEventsModal = new CreateEventsModal(eventID, Title, Description, Date, startTime, endTime, Location);
+        CreateEventsModal createEventsModal = new CreateEventsModal(eventID, Title, Description, Date, Location, startTime, endTime);
         eventRef.child(eventID).setValue(createEventsModal).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(Task<Void> task) {

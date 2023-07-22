@@ -1,27 +1,20 @@
 package com.example.noticeboard;
 
 public class CreateEventsModal {
-    String eventID, Title, Description, Date, startTime, endTime, Location;
+    String eventID, Title, Description, Date, Location, startTime, endTime;
 
     public CreateEventsModal() {
     }
 
-    public CreateEventsModal(String eventID, String title, String description, String date, String startTime, String endTime, String location) {
+
+    public CreateEventsModal( String eventID, String title, String description, String date, String location, String startTime, String endTime) {
+        this.Title = title;
+        this.Description = description;
+        this.Date = date;
+        this.Location = location;
         this.eventID = eventID;
-        Title = title;
-        Description = description;
-        Date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        Location = location;
-    }
-
-    public String getEventID() {
-        return eventID;
-    }
-
-    public void setEventID(String eventID) {
-        this.eventID = eventID;
     }
 
     public String getTitle() {
@@ -48,6 +41,22 @@ public class CreateEventsModal {
         Date = date;
     }
 
+    public String getLocation() {
+        return Location;
+    }
+
+    public void setLocation(String location) {
+        Location = location;
+    }
+
+    public String getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
+
     public String getStartTime() {
         return startTime;
     }
@@ -62,13 +71,5 @@ public class CreateEventsModal {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
-    }
-
-    public String getLocation() {
-        return Location;
-    }
-
-    public void setLocation(String location) {
-        Location = location;
     }
 }
