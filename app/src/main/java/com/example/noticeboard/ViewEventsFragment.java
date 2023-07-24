@@ -45,7 +45,7 @@ public class ViewEventsFragment extends Fragment {
 
         myEvents = view.findViewById(R.id.availableEvents);
         myEvents.setHasFixedSize(true);
-        myEvents.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        myEvents.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         events = new ArrayList<>();
 
