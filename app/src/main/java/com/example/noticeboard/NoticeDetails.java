@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.badge.BadgeDrawable;
@@ -32,10 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ExperimentalBadgeUtils public class NoticeDetails extends AppCompatActivity {
-    private TextView noticeTitle, noticeBody, fileLinks, postedBy, dateTime;
+    private TextView noticeTitle, noticeBody, fileLinks, postedBy, dateTime, num_of_likes;
     private ImageView noticeImage, likeImageView, shareImageView, commentImageView;
     private DatabaseReference trendsRef;
-    private boolean isLiked = false;
+    private FirebaseUser currentUser;
     PostNoticeModal notice;
 
     @Override
@@ -56,6 +57,7 @@ import java.util.List;
         likeImageView = findViewById(R.id.like);
         commentImageView = findViewById(R.id.comment);
         shareImageView = findViewById(R.id.share);
+        num_of_likes=findViewById(R.id.num_of_likes);
         trendsRef = FirebaseDatabase.getInstance().getReference("trends");
 
         noticeTitle.setText(notice.getTitle());
@@ -81,23 +83,22 @@ import java.util.List;
             noticeImage.setVisibility(View.GONE);
         }
 
+//        Like Image View
+        isLikes(notice.getId(), likeImageView);
+        numberOfLikes(likeImageView, notice.getId());
 
-        // Check if the notice is liked by the current user
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-            isLikedByUser(notice.getId(), userId, new LikeStatusCallback() {
-                @Override
-                public void onCallback(boolean isLiked) {
-                    // Update the UI with the like status
-                    if (isLiked) {
-                        // The notice is liked by the user, update the UI accordingly
-                        isLiked = true;
-                        likeImageView.setImageResource(R.drawable.logo);
-                    }
+        likeImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(likeImageView.getTag().equals("Like")){
+                    FirebaseDatabase.getInstance().getReference().child("Likes").child(notice.getId())
+                            .child(currentUser.getUid()).setValue(true);
+                }else{
+                    FirebaseDatabase.getInstance().getReference().child("Likes").child(notice.getId())
+                            .child(currentUser.getUid()).removeValue();
                 }
-            });
-        }
+            }
+        });
 
         // Share Notice
         shareImageView.setOnClickListener(new View.OnClickListener() {
@@ -132,126 +133,18 @@ import java.util.List;
             }
         });
 
-
-        // Set up the like button click listener
-        likeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
-                    final String userId = currentUser.getUid();
-                    final String noticeId = notice.getId(); // Store the noticeId separately
-
-                    isLikedByUser(noticeId, userId, new LikeStatusCallback() {
-                        @Override
-                        public void onCallback(boolean isLiked) {
-                            if (!isLiked) {
-                                // Perform the action when the "like" image view is clicked
-                                // Increment the like count and update the badge on the "like" image view
-                                int currentLikeCount = notice.getLikeCount();
-                                int newLikeCount = currentLikeCount + 1;
-                                notice.setLikeCount(newLikeCount);
-
-                                // Update the UI with the new like count
-                                updateLikeCountUI(newLikeCount);
-
-                                // Set the "liked" word on the "like" image view
-                                likeImageView.setImageResource(R.drawable.logo);
-
-                                // Submit the updated like count to the database
-                                submitLikeToDatabase(noticeId, newLikeCount, userId);
-                                submitNoticeToDatabase(notice);
-
-                                // Mark the notice as liked by the current user
-                                markNoticeAsLiked(noticeId, userId);
-                            }
-                        }
-                    });
-                } else {
-                    // Handle the case when the user is not logged in
-                    // You can prompt the user to log in or handle it according to your requirements
-                }
-            }
-        });
-    }
-
-    private void isLikedByUser(String noticeId, String userId, final LikeStatusCallback callback) {
-        if (noticeId != null && userId != null) {
-            DatabaseReference likesRef = trendsRef.child(noticeId).child("likes").child(userId);
-            likesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    boolean isLiked = dataSnapshot.exists();
-                    callback.onCallback(isLiked);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    callback.onCallback(false);
-                }
-            });
-        } else {
-            callback.onCallback(false);
-        }
-    }
-
-    interface LikeStatusCallback {
-        void onCallback(boolean isLiked);
-    }
-
-//    Marking Notice as Liked
-    private void markNoticeAsLiked(String noticeId, String userId) {
-        // Here, I'm assuming you have a "likes" node under "trends" that stores the users who liked a notice
-        if (noticeId != null && userId != null) {
-            trendsRef.child(noticeId).child("likes").child(userId).setValue(true);
-        }
-    }
-
-
-    // Submit the like to the database
-    private void submitLikeToDatabase(String noticeId, int likeCount, String userId) {
-        if (noticeId != null) {
-            // Submit the updated like count to the "trends" node in the database
-            trendsRef.child(noticeId).child("likeCount").setValue(likeCount);
-
-            // Store the user's like in the "likes" node of the notice in the database
-            trendsRef.child(noticeId).child("likes").child(userId).setValue(true);
-        }
-    }
-
-    private void submitNoticeToDatabase(PostNoticeModal notice) {
-        // Generate a unique ID for the notice in the "trends" node
-        String noticeId = trendsRef.push().getKey();
-
-        // Set the notice details in the "trends" node
-        trendsRef.child(noticeId).setValue(notice);
-    }
-
-    private void submitLikeCountToDatabase(String noticeId, int likeCount) {
-        // Submit the updated like count to the "trends" node in the database
-        trendsRef.child(noticeId).child("likeCount").setValue(likeCount);
-    }
-
-    private void updateLikeCountUI(int likeCount) {
-        // Update the badge on the "like" image view with the new like count
-        BadgeDrawable badgeDrawable = BadgeDrawable.create(this);
-        badgeDrawable.setNumber(likeCount);
-        BadgeUtils.attachBadgeDrawable(badgeDrawable, likeImageView, null);
     }
 
     private void setFileLinksClickListener(TextView fileLinksTextView, String fileUrl) {
         fileLinksTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an intent to view the file
                 Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                 viewIntent.setData(Uri.parse(fileUrl));
 
-                // Check if there is an app available to handle the view intent
                 if (viewIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(viewIntent);
                 } else {
-                    // If no suitable app is found, initiate download using DownloadManager
                     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
                     request.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0");
 
@@ -261,8 +154,6 @@ import java.util.List;
             }
         });
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -279,6 +170,59 @@ import java.util.List;
         // Finish the activity and go back to the previous activity
         super.onBackPressed();
         finish();
+    }
+
+//    Like and Unlike method
+public void isLikes(String noticeId, ImageView likeImage) {
+    currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+    if (currentUser != null && noticeId != null) {
+        DatabaseReference likeRef = FirebaseDatabase.getInstance().getReference().child("Likes");
+        likeRef.child(notice.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.child(currentUser.getUid()).exists()) {
+                    likeImageView.setImageResource(R.drawable.liked);
+                    likeImageView.setTag("Liked");
+                } else {
+                    likeImageView.setImageResource(R.drawable.like);
+                    likeImageView.setTag("Like");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Handle the onCancelled event, if needed
+            }
+        });
+    } else {
+        // Handle the case when the user is not authenticated
+        // You can set a default state for the likeImageView here
+        likeImageView.setImageResource(R.drawable.like);
+        likeImageView.setTag("Like");
+    }
+}
+
+    public void numberOfLikes(ImageView textView, String noticeId) {
+        if (noticeId != null) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Likes")
+                    .child(noticeId);
+
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    num_of_likes.setText(String.valueOf(snapshot.getChildrenCount()));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Handle the onCancelled event, if needed
+                }
+            });
+        } else {
+            // Handle the case when noticeId is null
+            num_of_likes.setText("0");
+        }
     }
 
 }

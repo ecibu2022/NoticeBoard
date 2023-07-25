@@ -98,12 +98,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="5dp"
-                android:gravity="center|center_horizontal">
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:padding="5dp">
 
                 <LinearLayout
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -111,22 +112,33 @@
 
                     <ImageView
                         android:id="@+id/like"
-                        android:layout_width="15dp"
-                        android:layout_height="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="25dp"
                         android:layout_weight="1"
                         android:src="@drawable/like"/>
 
+                    <TextView
+                        android:id="@+id/num_of_likes"
+                        android:layout_width="0dp"
+                        android:layout_height="25dp"
+                        android:layout_marginLeft="-25dp"
+                        android:layout_weight="1"
+                        android:text="5K"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="?android:attr/textColorSecondary"
+                        />
+
                     <ImageView
                         android:id="@+id/comment"
-                        android:layout_width="15dp"
-                        android:layout_height="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="25dp"
                         android:layout_weight="1"
                         android:src="@drawable/comment"/>
 
                     <ImageView
                         android:id="@+id/share"
-                        android:layout_width="15dp"
-                        android:layout_height="20dp"
+                        android:layout_width="20dp"
+                        android:layout_height="25dp"
                         android:layout_weight="1"
                         android:src="@drawable/share"/>
 

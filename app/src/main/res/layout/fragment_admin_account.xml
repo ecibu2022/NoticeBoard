@@ -38,7 +38,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="230dp"
                         app:srcCompat="@drawable/logo"
-                        android:scaleType="fitXY"
+                        android:scaleType="centerCrop"
                         />
 
                     <LinearLayout

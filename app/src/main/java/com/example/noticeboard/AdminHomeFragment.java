@@ -22,8 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -69,6 +75,8 @@ public class AdminHomeFragment extends Fragment {
                     PostNoticeModal myNotices = itemSnapshot.getValue(PostNoticeModal.class);
                     notices.add(myNotices);
                 }
+                // Sort the notices list based on date and time (newest on top)
+                sortNoticesByDateTime(notices);
                 noticeAdapter.notifyDataSetChanged();
                 progressDialog.dismiss();
             }
@@ -110,6 +118,27 @@ public class AdminHomeFragment extends Fragment {
             }
         });
         logout.show(); // Show the AlertDialog
+    }
+
+
+//Retrieving the notices based on newest first
+    private void sortNoticesByDateTime(List<PostNoticeModal> notices) {
+        // Sort the notices in descending order based on date and time (newest to oldest)
+        Collections.sort(notices, new Comparator<PostNoticeModal>() {
+            @Override
+            public int compare(PostNoticeModal notice1, PostNoticeModal notice2) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                try {
+                    Date date1 = sdf.parse(notice1.getDateTime());
+                    Date date2 = sdf.parse(notice2.getDateTime());
+                    // Sorting in descending order (newest to oldest)
+                    return date2.compareTo(date1);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
     }
 
 }

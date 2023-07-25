@@ -26,9 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class UserHomeFragment extends Fragment {
@@ -219,12 +225,34 @@ public class UserHomeFragment extends Fragment {
                         }
                     }
                 }
+                // Sort the notices list based on date and time (newest on top)
+                sortNoticesByDateTime(notices);
                 noticeAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getContext(), "Failed to retrieve year-specific notices", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //Retrieving the notices based on newest first
+    private void sortNoticesByDateTime(List<PostNoticeModal> notices) {
+        // Sort the notices in descending order based on date and time (newest to oldest)
+        Collections.sort(notices, new Comparator<PostNoticeModal>() {
+            @Override
+            public int compare(PostNoticeModal notice1, PostNoticeModal notice2) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                try {
+                    Date date1 = sdf.parse(notice1.getDateTime());
+                    Date date2 = sdf.parse(notice2.getDateTime());
+                    // Sorting in descending order (newest to oldest)
+                    return date2.compareTo(date1);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
             }
         });
     }
