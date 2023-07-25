@@ -2,6 +2,7 @@ package com.example.noticeboard;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
@@ -142,16 +143,12 @@ public class EditProfileFragment extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                // Email updated successfully
-                                // Notify the user that the profile has been updated
                                 Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // Email update failed
-                                // Handle the failure, e.g., display an error message to the user
                                 Toast.makeText(getContext(), "Email update failed", Toast.LENGTH_SHORT).show();
                             }
                         });

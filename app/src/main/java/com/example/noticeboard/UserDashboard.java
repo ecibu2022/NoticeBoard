@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -97,7 +98,48 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
             }
         });
 
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
 
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // Retrieve the user's image URL and name
+                            String imageUrl = dataSnapshot.child("profileImage").getValue(String.class);
+                            String fullName = dataSnapshot.child("fullName").getValue(String.class);
+
+                            // Setting the user's image and name in the navigation drawer layout
+                            if (imageUrl != null && !imageUrl.isEmpty()) {
+                                Glide.with(UserDashboard.this).load(imageUrl).into(userImageView);
+                            }
+                            userName.setText(fullName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle any errors that occurred while retrieving the user's data
+                    }
+                });
+
+            }
+        });
 
     }
 
@@ -196,6 +238,5 @@ private void showEventsOptionsDialog() {
     });
     builder.show();
 }
-
 
 }

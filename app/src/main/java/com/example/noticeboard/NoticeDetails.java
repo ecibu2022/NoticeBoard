@@ -35,7 +35,7 @@ import java.util.List;
 @ExperimentalBadgeUtils public class NoticeDetails extends AppCompatActivity {
     private TextView noticeTitle, noticeBody, fileLinks, postedBy, dateTime, num_of_likes;
     private ImageView noticeImage, likeImageView, shareImageView, commentImageView;
-    private DatabaseReference trendsRef;
+    private DatabaseReference likesRef;
     private FirebaseUser currentUser;
     PostNoticeModal notice;
 
@@ -58,7 +58,8 @@ import java.util.List;
         commentImageView = findViewById(R.id.comment);
         shareImageView = findViewById(R.id.share);
         num_of_likes=findViewById(R.id.num_of_likes);
-        trendsRef = FirebaseDatabase.getInstance().getReference("trends");
+        likesRef = FirebaseDatabase.getInstance().getReference().child("Likes");
+        currentUser=FirebaseAuth.getInstance().getCurrentUser();
 
         noticeTitle.setText(notice.getTitle());
         noticeBody.setText(notice.getBody());
@@ -87,16 +88,59 @@ import java.util.List;
         isLikes(notice.getId(), likeImageView);
         numberOfLikes(likeImageView, notice.getId());
 
+        // Check if the user has already liked this notice and set likeImageView accordingly
+        if (currentUser != null) {
+            likesRef.child(notice.getId()).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        likeImageView.setImageResource(R.drawable.liked);
+                        likeImageView.setTag("Liked");
+                    } else {
+                        likeImageView.setImageResource(R.drawable.like);
+                        likeImageView.setTag("Like");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        } else {
+            likeImageView.setImageResource(R.drawable.like);
+            likeImageView.setTag("Like");
+        }
+
+        // Set click listener for likeImageView
         likeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(likeImageView.getTag().equals("Like")){
-                    FirebaseDatabase.getInstance().getReference().child("Likes").child(notice.getId())
-                            .child(currentUser.getUid()).setValue(true);
-                }else{
-                    FirebaseDatabase.getInstance().getReference().child("Likes").child(notice.getId())
-                            .child(currentUser.getUid()).removeValue();
+                if (currentUser == null) {
+                    Toast.makeText(NoticeDetails.this, "Please log in to like this notice.", Toast.LENGTH_SHORT).show();
+                } else {
+                    String noticeId = notice.getId();
+                    if (likeImageView.getTag().equals("Like")) {
+                        // The user is liking the notice
+                        likesRef.child(noticeId).child(currentUser.getUid()).setValue(true);
+                    } else {
+                        // The user is unliking the notice
+                        likesRef.child(noticeId).child(currentUser.getUid()).removeValue();
+                    }
                 }
+            }
+        });
+
+        // Get and display the number of likes for this notice
+        likesRef.child(notice.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                num_of_likes.setText(String.valueOf(snapshot.getChildrenCount()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle the onCancelled event, if needed
             }
         });
 
@@ -178,15 +222,21 @@ public void isLikes(String noticeId, ImageView likeImage) {
 
     if (currentUser != null && noticeId != null) {
         DatabaseReference likeRef = FirebaseDatabase.getInstance().getReference().child("Likes");
-        likeRef.child(notice.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+        likeRef.child(noticeId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.child(currentUser.getUid()).exists()) {
-                    likeImageView.setImageResource(R.drawable.liked);
-                    likeImageView.setTag("Liked");
+                if (snapshot.exists()) {
+                    if (snapshot.child(currentUser.getUid()).exists()) {
+                        likeImage.setImageResource(R.drawable.liked);
+                        likeImage.setTag("Liked");
+                    } else {
+                        likeImage.setImageResource(R.drawable.like);
+                        likeImage.setTag("Like");
+                    }
                 } else {
-                    likeImageView.setImageResource(R.drawable.like);
-                    likeImageView.setTag("Like");
+                    // The noticeId node does not exist in the database
+                    likeImage.setImageResource(R.drawable.like);
+                    likeImage.setTag("Like");
                 }
             }
 
@@ -196,10 +246,10 @@ public void isLikes(String noticeId, ImageView likeImage) {
             }
         });
     } else {
-        // Handle the case when the user is not authenticated
+        // Handle the case when either currentUser is null or noticeId is null
         // You can set a default state for the likeImageView here
-        likeImageView.setImageResource(R.drawable.like);
-        likeImageView.setTag("Like");
+        likeImage.setImageResource(R.drawable.like);
+        likeImage.setTag("Like");
     }
 }
 
