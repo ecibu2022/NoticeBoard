@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -38,7 +40,6 @@ public class AdminHomeFragment extends Fragment {
     private DatabaseReference databaseReference;
     private List<PostNoticeModal> notices;
     private ApproveNoticeAdapter noticeAdapter;
-    private CircleImageView logout;
     private FirebaseAuth mAuth;
 
     public AdminHomeFragment() {
@@ -51,7 +52,6 @@ public class AdminHomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_admin_home, container, false);
         myNotices = view.findViewById(R.id.notices);
-        logout=view.findViewById(R.id.logout);
         mAuth=FirebaseAuth.getInstance();
         myNotices.setHasFixedSize(true);
         myNotices.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -86,14 +86,6 @@ public class AdminHomeFragment extends Fragment {
                 progressDialog.dismiss();
             }
 
-        });
-
-//        Logout
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logoutDialog();
-            }
         });
 
         return  view;
@@ -140,5 +132,6 @@ public class AdminHomeFragment extends Fragment {
             }
         });
     }
+
 
 }

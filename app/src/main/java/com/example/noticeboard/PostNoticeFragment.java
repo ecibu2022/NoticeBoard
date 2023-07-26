@@ -1,34 +1,21 @@
 package com.example.noticeboard;
 
 import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +29,11 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,7 +58,6 @@ import com.google.gson.Gson;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -85,28 +76,23 @@ public class PostNoticeFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 200;
     private static final int REQUEST_IMAGE_UPLOAD = 300;
 
-    private String[] faculty = {"FCI", "FAST", "Science", "FOM", "FIS"};
-    private String[] course = {"BIT", "BCS", "BSE"};
-    private String[] year = {"1", "2", "3", "4", "5"};
+    private final String[] faculty = {"FCI", "FAST", "Science", "FOM", "FIS"};
+    private final String[] course = {"BIT", "BCS", "BSE"};
+    private final String[] year = {"1", "2", "3", "4", "5"};
     private TextInputLayout Faculty, Course, Year;
     private AutoCompleteTextView facultyTextView, courseTextView, yearTextView;
-    private ArrayAdapter<String> myFaculty, myCourse, myYear;
     private ImageView uploadImage;
     private Uri imageUri, fileUri;
     private String imageUrl, fileUrl;
     private EditText fileEditText, title, body;
     private CheckBox everyone, terms;
-    private Button browseFileButton, post;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference, usersRef, noticeRef, adminTokenRef;
+    private DatabaseReference usersRef, noticeRef, adminTokenRef;
     private StorageReference storageReference;
     private FirebaseUser currentUser;
-    private String adminID;
     private String noticeID;
-    private String fileExtension;
 
-    private static final int REQUEST_PICK_IMAGE = 1;
     private static final int REQUEST_PICK_FILE = 2;
 
     public PostNoticeFragment() {
@@ -119,7 +105,7 @@ public class PostNoticeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post_notice, container, false);
         uploadImage = view.findViewById(R.id.noticeImage);
         fileEditText = view.findViewById(R.id.fileEditText);
-        browseFileButton = view.findViewById(R.id.browseFileButton);
+        Button browseFileButton = view.findViewById(R.id.browseFileButton);
         title = view.findViewById(R.id.title);
         body = view.findViewById(R.id.body);
         everyone = view.findViewById(R.id.everyone);
@@ -131,7 +117,7 @@ public class PostNoticeFragment extends Fragment {
         courseTextView = view.findViewById(R.id.course);
         yearTextView = view.findViewById(R.id.year);
         progressDialog = new ProgressDialog(getContext());
-        post = view.findViewById(R.id.post);
+        Button post = view.findViewById(R.id.post);
 
         firebaseAuth = FirebaseAuth.getInstance();
         noticeRef = FirebaseDatabase.getInstance().getReference("Notices");
@@ -139,9 +125,9 @@ public class PostNoticeFragment extends Fragment {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         adminTokenRef = FirebaseDatabase.getInstance().getReference("users");
 
-        myFaculty = new ArrayAdapter<String>(getContext(), R.layout.faculty_list, faculty);
-        myCourse = new ArrayAdapter<String>(getContext(), R.layout.course_list, course);
-        myYear = new ArrayAdapter<String>(getContext(), R.layout.year_list, year);
+        ArrayAdapter<String> myFaculty = new ArrayAdapter<>(getContext(), R.layout.faculty_list, faculty);
+        ArrayAdapter<String> myCourse = new ArrayAdapter<>(getContext(), R.layout.course_list, course);
+        ArrayAdapter<String> myYear = new ArrayAdapter<>(getContext(), R.layout.year_list, year);
 
         facultyTextView.setAdapter(myFaculty);
         courseTextView.setAdapter(myCourse);
@@ -324,9 +310,6 @@ public class PostNoticeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot adminSnapshot : dataSnapshot.getChildren()) {
                     String adminToken = adminSnapshot.child("deviceToken").getValue(String.class);
-                    String name = adminSnapshot.child("role").getValue(String.class);
-                    Log.d("Admin Token: ", adminToken);
-                    Log.d("Role", name);
                     if (adminToken != null) {
                         // Send the notification using FCM
                         sendFCMNotificationToAdmin(adminToken, noticeTitle);
@@ -415,7 +398,7 @@ public class PostNoticeFragment extends Fragment {
         progressDialog.show();
 
         // Get the file extension
-        fileExtension = getFileExtension(fileUri);
+        String fileExtension = getFileExtension(fileUri);
 
         // Create a reference to the Firebase Storage location where you want to store the file
         storageReference = FirebaseStorage.getInstance().getReference().child("files").child(System.currentTimeMillis() + "." + fileExtension);

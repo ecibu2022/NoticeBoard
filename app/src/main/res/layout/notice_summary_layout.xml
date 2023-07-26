@@ -11,7 +11,7 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="15dp"
         app:cardBackgroundColor="@color/white"
-        app:cardElevation="15dp"
+        app:cardElevation="3dp"
         app:contentPadding="5dp">
 
         <LinearLayout

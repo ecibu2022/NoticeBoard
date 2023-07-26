@@ -57,6 +57,7 @@ public class UserHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_home, container, false);
+
         setHasOptionsMenu(true);
 
         myNotices = view.findViewById(R.id.myNotices);

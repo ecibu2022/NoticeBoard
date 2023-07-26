@@ -38,15 +38,18 @@ public class PostNoticeModal implements Parcelable {
         this.submittedBy = submittedBy;
         this.dateTime = dateTime;
         this.id = id;
+        this.likeCount=0;
     }
 
     protected PostNoticeModal(Parcel in) {
+        id=in.readString();
         title = in.readString();
         body = in.readString();
         submittedBy = in.readString();
         dateTime = in.readString();
         fileUrl = in.readString();
         imageUrl = in.readString();
+        likeCount = in.readInt();
     }
 
     public static final Creator<PostNoticeModal> CREATOR = new Creator<PostNoticeModal>() {
@@ -181,12 +184,14 @@ public class PostNoticeModal implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(title);
         dest.writeString(body);
         dest.writeString(submittedBy);
         dest.writeString(dateTime);
         dest.writeString(fileUrl);
         dest.writeString(imageUrl);
+        dest.writeInt(likeCount);
     }
 
 }
