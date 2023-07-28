@@ -19,7 +19,7 @@ public class PostNoticeModal implements Parcelable {
     private String submittedBy;
     private String dateTime;
     private String key;
-    private int likeCount;
+    private long likeCount;
 
     public PostNoticeModal() {
         // Empty constructor required for Firebase
@@ -49,7 +49,7 @@ public class PostNoticeModal implements Parcelable {
         dateTime = in.readString();
         fileUrl = in.readString();
         imageUrl = in.readString();
-        likeCount = in.readInt();
+        likeCount = in.readLong();
     }
 
     public static final Creator<PostNoticeModal> CREATOR = new Creator<PostNoticeModal>() {
@@ -149,7 +149,7 @@ public class PostNoticeModal implements Parcelable {
         return fileUrl;
     }
 
-    public void setFileUrls(String fileUrls) {
+    public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
     }
 
@@ -174,11 +174,11 @@ public class PostNoticeModal implements Parcelable {
         return 0;
     }
 
-    public int getLikeCount() {
+    public long getLikeCount() {
         return likeCount;
     }
 
-    public void setLikeCount(int likeCount) {
+    public void setLikeCount(long likeCount) {
         this.likeCount = likeCount;
     }
 
@@ -191,7 +191,7 @@ public class PostNoticeModal implements Parcelable {
         dest.writeString(dateTime);
         dest.writeString(fileUrl);
         dest.writeString(imageUrl);
-        dest.writeInt(likeCount);
+        dest.writeLong(likeCount);
     }
 
 }

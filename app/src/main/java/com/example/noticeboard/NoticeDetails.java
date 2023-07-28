@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,9 +43,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoticeDetails extends AppCompatActivity {
-    private TextView noticeTitle, noticeBody, fileLinks, postedBy, dateTime, num_of_likes;
+    private TextView noticeTitle, noticeBody, fileLinks, submitedBy, dateTime, num_of_likes;
     private ImageView noticeImage, likeImageView, shareImageView, commentImageView;
-    private DatabaseReference likesRef, noticesRef, noticeRef;
+    private DatabaseReference likesRef, noticeRef;
     private FirebaseUser currentUser;
     PostNoticeModal notice;
     private boolean isLikedByCurrentUser = false;
@@ -59,7 +61,7 @@ public class NoticeDetails extends AppCompatActivity {
         if (notice == null) {
             // Handle the case when notice is null
             Toast.makeText(this, "Error: Notice is null.", Toast.LENGTH_SHORT).show();
-            finish(); // Finish the activity and go back to the previous activity
+            finish();
             return;
         }
 
@@ -68,18 +70,19 @@ public class NoticeDetails extends AppCompatActivity {
         noticeTitle = findViewById(R.id.noticeTitle);
         noticeBody = findViewById(R.id.noticeBody);
         fileLinks = findViewById(R.id.fileLinks);
-        postedBy = findViewById(R.id.postedBy);
+        submitedBy=findViewById(R.id.postedBy);
         dateTime = findViewById(R.id.dateTime);
         likeImageView = findViewById(R.id.like);
         commentImageView = findViewById(R.id.comment);
         shareImageView = findViewById(R.id.share);
         num_of_likes=findViewById(R.id.num_of_likes);
         currentUser=FirebaseAuth.getInstance().getCurrentUser();
-        likesRef = FirebaseDatabase.getInstance().getReference().child("Likes").child(notice.getId());
+        likesRef = FirebaseDatabase.getInstance().getReference("Likes").child(notice.getId());
+        noticeRef = FirebaseDatabase.getInstance().getReference("approved_notices").child(notice.getId());
 
         noticeTitle.setText(notice.getTitle());
         noticeBody.setText(notice.getBody());
-        postedBy.setText("Posted by " + notice.getSubmittedBy());
+        submitedBy.setText("Posted by "+ notice.getSubmittedBy());
         dateTime.setText("On " + notice.getDateTime());
 
         // Set file URL to the fileLinks TextView
@@ -112,7 +115,7 @@ public class NoticeDetails extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle any error during database read
+
             }
         });
 
@@ -121,57 +124,32 @@ public class NoticeDetails extends AppCompatActivity {
             public void onClick(View view) {
                 if (currentUser == null) {
                     // User not logged in, handle login or show a message
-                    // For example, you can start a LoginActivity to handle user login.
                     return;
                 }
 
-                DatabaseReference userLikeRef = likesRef.child(currentUser.getUid());
-                userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            // User already liked the notice, perform unlike action
-                            likesRef.child(currentUser.getUid()).removeValue()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                // Successfully unliked, update UI
-                                                isLikedByCurrentUser = false;
-                                                updateLikeStatus();
-                                                updateLikeCount(false);
-                                            } else {
-                                                // Handle unlike failure
-                                            }
-                                        }
-                                    });
-                        } else {
-                            // User has not liked the notice, perform like action
-                            likesRef.child(currentUser.getUid()).setValue(true)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                // Successfully liked, update UI
-                                                isLikedByCurrentUser = true;
-                                                updateLikeStatus();
-                                                updateLikeCount(true);
-                                            } else {
-                                                // Handle like failure
-                                            }
-                                        }
-                                    });
-                        }
-                    }
+                if (isLikedByCurrentUser) {
+                    // User already liked the notice, perform unlike action
+                    likesRef.child(currentUser.getUid()).removeValue();
+                    decrementLikeCount();
+                } else {
+                    // User has not liked the notice, perform like action
+                    likesRef.child(currentUser.getUid()).setValue(true);
+                    incrementLikeCount();
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle any error during database read
-                    }
-                });
+                // Update the UI to reflect the change in like status
+                isLikedByCurrentUser = !isLikedByCurrentUser;
+                updateLikeStatus();
             }
         });
 
+//        Share Notice
+        shareImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareNotice();
+            }
+        });
     }
 
 
@@ -184,42 +162,56 @@ public class NoticeDetails extends AppCompatActivity {
         }
     }
 
-    private void updateLikeCount(boolean isLiked) {
-        noticesRef = FirebaseDatabase.getInstance().getReference().child("Notices");
-        noticeRef = noticesRef.child(notice.getId());
+    // Function to increment the likeCount in the database
+    private void incrementLikeCount() {
+        // Increment the likeCount in the database
+        notice.setLikeCount(notice.getLikeCount() + 1);
 
-        // Update like count atomically based on the 'isLiked' flag
-        noticeRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                // Get the current like count
-                Long currentLikes = currentData.child("likeCount").getValue(Long.class);
-                if (currentLikes == null) {
-                    currentLikes = 0L;
-                }
+        // Update the likeCount value in the "Notices" node
+        noticeRef.child("likeCount").setValue(notice.getLikeCount())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Like count successfully incremented in the database
+                        Log.d("NoticeDetails", "New like count: " + notice.getLikeCount());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to update like count in the database
+                        Toast.makeText(NoticeDetails.this, "Failed to update like count", Toast.LENGTH_SHORT).show();
+                        // Revert the local change since the database update failed
+                        notice.setLikeCount(notice.getLikeCount() - 1);
+                        updateLikeStatus(); // Update the UI to reflect the reverted change
+                    }
+                });
+    }
 
-                // Update the like count based on the 'isLiked' flag
-                if (isLiked) {
-                    currentLikes++;
-                } else {
-                    currentLikes = Math.max(0, currentLikes - 1);
-                }
+    // Function to decrement the likeCount in the database
+    private void decrementLikeCount() {
+        // Decrement the likeCount in the database
+        notice.setLikeCount(notice.getLikeCount() - 1);
 
-                // Set the updated like count in the database
-                currentData.child("likeCount").setValue(currentLikes);
-
-                // Transaction success, return the updated data
-                return Transaction.success(currentData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                if (error != null) {
-                    // Handle database error during like count update
-                }
-            }
-        });
+        // Update the likeCount value in the "Notices" node
+        noticeRef.child("likeCount").setValue(notice.getLikeCount())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Like count successfully decremented in the database
+                        Log.d("NoticeDetails", "New like count: " + notice.getLikeCount());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to update like count in the database
+                        Toast.makeText(NoticeDetails.this, "Failed to update like count", Toast.LENGTH_SHORT).show();
+                        // Revert the local change since the database update failed
+                        notice.setLikeCount(notice.getLikeCount() + 1);
+//                        updateLikeStatus(); // Update the UI to reflect the reverted change
+                    }
+                });
     }
 
 
@@ -253,12 +245,55 @@ public class NoticeDetails extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle any error during database read
+
                     }
                 });
             }
         }
     };
+
+    // Function to share the notice details along with the image and file link (if available)
+    private void shareNotice() {
+        // Check if the notice image is available
+        if (noticeImage.getVisibility() == View.VISIBLE) {
+            // Get the notice image drawable from the ImageView
+            Drawable noticeImageDrawable = noticeImage.getDrawable();
+            if (noticeImageDrawable != null) {
+                // Convert the drawable to a Bitmap
+                Bitmap noticeImageBitmap = Utils.drawableToBitmap(noticeImageDrawable);
+
+                // Create an Intent to share the image
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/*");
+                // Put the Bitmap image as an extra in the Intent
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Utils.getBitmapUri(NoticeDetails.this, noticeImageBitmap));
+
+                // Add the title and body text to the shared content
+                String sharedText = "Notice Title: " + notice.getTitle() + "\n\n"
+                        + "Notice Body: " + notice.getBody() + "\n\n";
+
+                // Check if file link is available
+                String fileUrl = notice.getFileUrl();
+                if (fileUrl != null && !fileUrl.isEmpty()) {
+                    sharedText += "File Link: " + fileUrl;
+                }
+
+                // Add the shared text as an extra in the Intent
+                shareIntent.putExtra(Intent.EXTRA_TEXT, sharedText);
+
+                // Add a subject for the shared content
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Notice Details");
+                // Start the Intent
+                startActivity(Intent.createChooser(shareIntent, "Share Notice Details"));
+            } else {
+                // The notice image is not available
+                Toast.makeText(this, "Notice image is not available for sharing.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // The notice image is not available
+            Toast.makeText(this, "Notice image is not available for sharing.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     private void setFileLinksClickListener(TextView fileLinksTextView, String fileUrl) {
@@ -297,6 +332,5 @@ public class NoticeDetails extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
-
 
 }

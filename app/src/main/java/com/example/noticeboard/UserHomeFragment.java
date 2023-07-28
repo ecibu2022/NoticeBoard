@@ -43,6 +43,7 @@ public class UserHomeFragment extends Fragment {
     private List<PostNoticeModal> notices;
     private NoticeAdapter noticeAdapter;
     private Set<String> noticeIds;
+    private String facultyName, course,year;
 
     public UserHomeFragment() {
         // Required empty public constructor
@@ -53,6 +54,7 @@ public class UserHomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true); // Enable menu in the fragment
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,9 +84,9 @@ public class UserHomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    String facultyName = snapshot.child("faculty").getValue(String.class);
-                    String course = snapshot.child("course").getValue(String.class);
-                    String year = snapshot.child("year").getValue(String.class);
+                    facultyName = snapshot.child("faculty").getValue(String.class);
+                    course = snapshot.child("course").getValue(String.class);
+                    year = snapshot.child("year").getValue(String.class);
 
                     DatabaseReference noticesRef = FirebaseDatabase.getInstance().getReference("approved_notices");
 
@@ -100,7 +102,7 @@ public class UserHomeFragment extends Fragment {
                                     noticeIds.add(itemSnapshot.getKey());
                                 }
                             }
-                            filterNoticesByFaculty(noticesRef, facultyName, course, year);
+                            filterNoticesByFaculty(noticesRef, facultyName, course, year); // Pass course and year variables
                             progressDialog.dismiss();
                         }
 
@@ -127,34 +129,65 @@ public class UserHomeFragment extends Fragment {
         return view;
     }
 
+    // Modify the method filterNoticesByFaculty as follows:
     private void filterNoticesByFaculty(DatabaseReference noticesRef, String facultyName, String course, String year) {
-        if (facultyName == null || facultyName.isEmpty()) {
-            // If "Everyone" is selected, set Faculty, Course, and Year to null
-            filterNoticesByCourse(noticesRef, null, null, null);
-            return;
-        }
+        // Create a new list to collect the filtered notices
+        List<PostNoticeModal> filteredNotices = new ArrayList<>();
 
+        // Query notices accessible to everyone
+        Query everyoneNoticesQuery = noticesRef.child("Everyone").orderByChild("everyone").equalTo("Everyone");
+        everyoneNoticesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                    PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
+                    if (notice != null && !noticeIds.contains(itemSnapshot.getKey())) {
+                        // Check if the notice is accessible to everyone
+                        filteredNotices.add(notice);
+                        noticeIds.add(itemSnapshot.getKey());
+                    }
+                }
+
+                // If facultyName is not null or empty, then filter faculty-specific notices
+                if (facultyName != null && !facultyName.isEmpty()) {
+                    // Add the notices accessible to everyone to the filteredNotices list before filtering faculty-specific notices
+                    filteredNotices.addAll(notices); // Add all existing notices to the filteredNotices list
+                    filterFacultySpecificNotices(noticesRef, facultyName, filteredNotices);
+                } else {
+                    // If facultyName is null or empty, display all filtered notices
+                    displayFilteredNotices(filteredNotices);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to retrieve notices for everyone", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Add a new method to filter faculty-specific notices:
+    private void filterFacultySpecificNotices(DatabaseReference noticesRef, String facultyName, List<PostNoticeModal> filteredNotices) {
         // Query faculty-specific notices
         Query facultyNoticesQuery = noticesRef.orderByChild("faculty").equalTo(facultyName);
         facultyNoticesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    if (!noticeIds.contains(itemSnapshot.getKey())) {
-                        PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
-                        if (notice != null && course.equals(notice.getCourse())) {
-                            // Check if the notice is meant for the user's course
-                            notices.add(notice);
-                            noticeIds.add(itemSnapshot.getKey());
-                        }
+                    PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
+                    if (notice != null && !noticeIds.contains(itemSnapshot.getKey())) {
+                        // Check if the notice is meant for the user's faculty
+                        filteredNotices.add(notice);
+                        noticeIds.add(itemSnapshot.getKey());
                     }
                 }
 
-                if (year == null || year.isEmpty()) {
-                    // If "Post for Faculty and Course" is selected, both Faculty and Course are set, and Year is null
-                    noticeAdapter.notifyDataSetChanged();
+                // If course is not null or empty, then filter course-specific notices
+                if (course != null && !course.isEmpty()) {
+                    filterCourseSpecificNotices(noticesRef, facultyName, course, filteredNotices);
                 } else {
-                    filterNoticesByYear(noticesRef, facultyName, course, year);
+                    // If course is null or empty, display all filtered notices
+                    displayFilteredNotices(filteredNotices);
                 }
             }
 
@@ -163,37 +196,30 @@ public class UserHomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to retrieve faculty-specific notices", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    private void filterNoticesByCourse(DatabaseReference noticesRef, String facultyName, String course, String year) {
-        if (course == null || course.isEmpty()) {
-            // If "Post for Course in a Faculty" is selected, both Faculty and Course are set, and Year is null
-            noticeAdapter.notifyDataSetChanged();
-            return;
-        }
-
+    // Add a new method to filter course-specific notices:
+    private void filterCourseSpecificNotices(DatabaseReference noticesRef, String facultyName, String course, List<PostNoticeModal> filteredNotices) {
         // Query course-specific notices
-        Query courseNoticesQuery = noticesRef.orderByChild("course").equalTo(course);
+        Query courseNoticesQuery = noticesRef.child("Course").orderByChild("course").equalTo(course);
         courseNoticesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    if (!noticeIds.contains(itemSnapshot.getKey())) {
-                        PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
-                        if (notice != null && notice.getFaculty().equals(facultyName)) {
-                            // Check if the notice is meant for the user's faculty
-                            notices.add(notice);
-                            noticeIds.add(itemSnapshot.getKey());
-                        }
+                    PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
+                    if (notice != null && !noticeIds.contains(itemSnapshot.getKey()) && notice.getFaculty().equals(facultyName)) {
+                        // Check if the notice is meant for the user's faculty and course
+                        filteredNotices.add(notice);
+                        noticeIds.add(itemSnapshot.getKey());
                     }
                 }
 
-                if (year == null || year.isEmpty()) {
-                    // If "Post for Course in a Faculty" is selected, both Faculty and Course are set, and Year is null
-                    noticeAdapter.notifyDataSetChanged();
+                // If year is not null or empty, then filter year-specific notices
+                if (year != null && !year.isEmpty()) {
+                    filterYearSpecificNotices(noticesRef, facultyName, course, year, filteredNotices);
                 } else {
-                    filterNoticesByYear(noticesRef, facultyName, course, year);
+                    // If year is null or empty, display all filtered notices
+                    displayFilteredNotices(filteredNotices);
                 }
             }
 
@@ -204,31 +230,23 @@ public class UserHomeFragment extends Fragment {
         });
     }
 
-    private void filterNoticesByYear(DatabaseReference noticesRef, String facultyName, String course, String year) {
-        if (year == null || year.isEmpty()) {
-            // If "Post for Faculty, Course, and Year" is selected, all three values are set
-            noticeAdapter.notifyDataSetChanged();
-            return;
-        }
-
+    // Add a new method to filter year-specific notices:
+    private void filterYearSpecificNotices(DatabaseReference noticesRef, String facultyName, String course, String year, List<PostNoticeModal> filteredNotices) {
         // Query year-specific notices
-        Query yearNoticesQuery = noticesRef.orderByChild("year").equalTo(year);
+        Query yearNoticesQuery = noticesRef.child("Year").orderByChild("year").equalTo(year);
         yearNoticesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    if (!noticeIds.contains(itemSnapshot.getKey())) {
-                        PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
-                        if (notice != null && notice.getFaculty().equals(facultyName) && notice.getCourse().equals(course)) {
-                            // Check if the notice is meant for the user's faculty and course
-                            notices.add(notice);
-                            noticeIds.add(itemSnapshot.getKey());
-                        }
+                    PostNoticeModal notice = itemSnapshot.getValue(PostNoticeModal.class);
+                    if (notice != null && !noticeIds.contains(itemSnapshot.getKey()) && notice.getFaculty().equals(facultyName) && notice.getCourse().equals(course)) {
+                        // Check if the notice is meant for the user's faculty, course, and year
+                        filteredNotices.add(notice);
+                        noticeIds.add(itemSnapshot.getKey());
                     }
                 }
-                // Sort the notices list based on date and time (newest on top)
-                sortNoticesByDateTime(notices);
-                noticeAdapter.notifyDataSetChanged();
+                // Display all filtered notices
+                displayFilteredNotices(filteredNotices);
             }
 
             @Override
@@ -236,6 +254,16 @@ public class UserHomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to retrieve year-specific notices", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Add a new method to display the filtered notices:
+    private void displayFilteredNotices(List<PostNoticeModal> filteredNotices) {
+        // Clear the existing notices list and add the filtered notices
+        notices.clear();
+        notices.addAll(filteredNotices);
+        // Sort the notices list based on date and time (newest on top)
+        sortNoticesByDateTime(notices);
+        noticeAdapter.notifyDataSetChanged();
     }
 
     //Retrieving the notices based on newest first
