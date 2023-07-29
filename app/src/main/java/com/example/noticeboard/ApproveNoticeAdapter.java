@@ -126,7 +126,7 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         // Sending a notification to the target audience
-                                                        sendNotificationToTargetAudience(key);
+                                                        sendNotificationToTargetAudience(key, notice.getTitle());
 
                                                         // Remove the notice from the list using its noticeId
                                                         for (int i = 0; i < notices.size(); i++) {
@@ -193,48 +193,48 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
         }
     }
 
-    private void deleteNoticeImages(String noticeId, List<String> imageUrls) {
-        if (imageUrls != null) {
-            for (String imageUrl : imageUrls) {
-                // Delete the image from storage
-                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                imageRef.delete()
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Failed to delete notice image", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        }
-    }
-
-    private void deleteNoticeFiles(String noticeId, List<String> fileUrls) {
-        if (fileUrls != null) {
-            for (String fileUrl : fileUrls) {
-                // Delete the file from storage
-                StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
-                fileRef.delete()
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Failed to delete notice file", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        }
-    }
-
-    public void removeItem(int position) {
-        if (position >= 0 && position < notices.size()) {
-            notices.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, notices.size());
-        }
-    }
+//    private void deleteNoticeImages(String noticeId, List<String> imageUrls) {
+//        if (imageUrls != null) {
+//            for (String imageUrl : imageUrls) {
+//                // Delete the image from storage
+//                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+//                imageRef.delete()
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Toast.makeText(context, "Failed to delete notice image", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//            }
+//        }
+//    }
+//
+//    private void deleteNoticeFiles(String noticeId, List<String> fileUrls) {
+//        if (fileUrls != null) {
+//            for (String fileUrl : fileUrls) {
+//                // Delete the file from storage
+//                StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
+//                fileRef.delete()
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Toast.makeText(context, "Failed to delete notice file", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//            }
+//        }
+//    }
+//
+//    public void removeItem(int position) {
+//        if (position >= 0 && position < notices.size()) {
+//            notices.remove(position);
+//            notifyItemRemoved(position);
+//            notifyItemRangeChanged(position, notices.size());
+//        }
+//    }
 
 //    Send Notification to Target Audience
-private void sendNotificationToTargetAudience(String noticeId) {
+private void sendNotificationToTargetAudience(String noticeId, String title) {
     DatabaseReference noticeRef = FirebaseDatabase.getInstance().getReference("Notices").child(noticeId);
     noticeRef.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
@@ -288,7 +288,7 @@ private void sendNotificationToTargetAudience(String noticeId) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, "New Notice Posted", "A new notice has been posted");
                     }
                 }
             }
@@ -443,6 +443,5 @@ private void sendFCMNotification(String userToken, String title, String body) {
             }
         });
     }
-
 
 }

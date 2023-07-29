@@ -20,7 +20,7 @@ public class FirebaseCloudMessagingService extends FirebaseMessagingService {
         // Handle the incoming message here
         if (remoteMessage.getData().size() > 0) {
             String title = remoteMessage.getData().get("title");
-            String message = remoteMessage.getData().get("message");
+            String message = remoteMessage.getData().get("body");
             showNotification(title, message);
         }
     }

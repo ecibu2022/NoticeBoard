@@ -301,7 +301,7 @@ public class PostNoticeFragment extends Fragment {
         });
     }
 
-//    Send Notification To Admin
+    //    Send Notification To Admin
     private void sendNotificationToAdmin(String noticeTitle) {
         adminTokenRef = FirebaseDatabase.getInstance().getReference().child("users");
         Query adminQuery = adminTokenRef.orderByChild("role").equalTo("admin");

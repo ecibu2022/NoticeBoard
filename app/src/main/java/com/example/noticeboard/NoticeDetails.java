@@ -469,6 +469,56 @@ public class NoticeDetails extends AppCompatActivity {
 //    }
 
     private void shareNotice() {
+        // Check if the notice image is available
+        if (noticeImage.getVisibility() == View.VISIBLE) {
+            // Get the notice image drawable from the ImageView
+            Drawable noticeImageDrawable = noticeImage.getDrawable();
+            if (noticeImageDrawable != null) {
+                // Convert the drawable to a Bitmap
+                Bitmap noticeImageBitmap = Utils.drawableToBitmap(noticeImageDrawable);
+
+                // Save the image to a local file and get its URI
+                Uri imageUri = saveImageLocally(noticeImageBitmap);
+
+                if (imageUri != null) {
+                    // Create an Intent to share the image and text
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("image/*");
+                    // Put the image URI as an extra in the Intent
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+
+                    // Add the title and body text to the shared content
+                    String sharedText = "Notice Title: " + notice.getTitle() + "\n\n"
+                            + "Notice Body: " + notice.getBody() + "\n\n";
+
+                    // Check if file link is available
+                    String fileUrl = notice.getFileUrl();
+                    if (fileUrl != null && !fileUrl.isEmpty()) {
+                        sharedText += "File Link: " + fileUrl;
+                    }
+
+                    // Add the shared text as an extra in the Intent
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, sharedText);
+
+                    // Add a subject for the shared content
+                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Notice Details");
+                    // Start the Intent
+                    startActivity(Intent.createChooser(shareIntent, "Share Notice Details"));
+                } else {
+                    // Failed to save the image, share only text
+                    shareTextOnly();
+                }
+            } else {
+                // The notice image is not available, share only text
+                shareTextOnly();
+            }
+        } else {
+            // The notice image is not available, share only text
+            shareTextOnly();
+        }
+    }
+
+    private void shareTextOnly() {
         // Add the title and body text to the shared content
         String sharedText = "Notice Title: " + notice.getTitle() + "\n\n"
                 + "Notice Body: " + notice.getBody() + "\n\n";
@@ -479,37 +529,7 @@ public class NoticeDetails extends AppCompatActivity {
             sharedText += "File Link: " + fileUrl;
         }
 
-        // Check if the notice image is available
-        if (noticeImage.getVisibility() == View.VISIBLE) {
-            // Get the notice image drawable from the ImageView
-            Drawable noticeImageDrawable = noticeImage.getDrawable();
-            if (noticeImageDrawable != null) {
-                // Convert the drawable to a Bitmap
-                Bitmap noticeImageBitmap = Utils.drawableToBitmap(noticeImageDrawable);
-
-                // Create an Intent to share the image
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("image/*");
-                // Put the Bitmap image as an extra in the Intent
-                shareIntent.putExtra(Intent.EXTRA_STREAM, Utils.getBitmapUri(NoticeDetails.this, noticeImageBitmap));
-
-                // Add the shared text as an extra in the Intent
-                shareIntent.putExtra(Intent.EXTRA_TEXT, sharedText);
-                // Add a subject for the shared content
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Notice Details");
-                // Start the Intent
-                startActivity(Intent.createChooser(shareIntent, "Share Notice Details"));
-            } else {
-                // The notice image is not available, share only text
-                shareTextOnly(sharedText);
-            }
-        } else {
-            // The notice image is not available, share only text
-            shareTextOnly(sharedText);
-        }
-    }
-
-    private void shareTextOnly(String sharedText) {
+        // Create an Intent to share the text only
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, sharedText);
@@ -517,20 +537,21 @@ public class NoticeDetails extends AppCompatActivity {
         startActivity(Intent.createChooser(shareIntent, "Share Notice Details"));
     }
 
-//    private Uri saveImageLocally(Bitmap bitmap) {
-//        try {
-//            File cachePath = new File(getCacheDir(), "images");
-//            cachePath.mkdirs();
-//            File file = new File(cachePath, "image.png");
-//            FileOutputStream stream = new FileOutputStream(file);
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//            stream.close();
-//            return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+
+    private Uri saveImageLocally(Bitmap bitmap) {
+        try {
+            File cachePath = new File(getCacheDir(), "images");
+            cachePath.mkdirs();
+            File file = new File(cachePath, "image.png");
+            FileOutputStream stream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            stream.close();
+            return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private void setFileLinksClickListener(TextView fileLinksTextView, String fileUrl) {
         fileLinksTextView.setOnClickListener(new View.OnClickListener() {
