@@ -161,28 +161,39 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new UserHomeFragment())
                         .commit();
+                getSupportActionBar().setTitle("Home");
                 break;
 
             case R.id.edit:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new EditProfileFragment()).addToBackStack(String.valueOf(R.id.home))
                         .commit();
+                getSupportActionBar().setTitle("User Profile");
                 break;
 
             case R.id.settings:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new SettingsFragment()).addToBackStack(String.valueOf(R.id.home))
                         .commit();
+                getSupportActionBar().setTitle("Settings");
                 break;
 
             case R.id.post:
                 getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
                         .replace(R.id.fragment_container, new PostNoticeFragment())
                         .commit();
+                getSupportActionBar().setTitle("Post Notice");
                 break;
 
             case R.id.events:
                 showEventsOptionsDialog();
+                break;
+
+            case R.id.trends:
+                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
+                        .replace(R.id.fragment_container, new TrendsFragment())
+                        .commit();
+                getSupportActionBar().setTitle("Trends");
                 break;
 
             case R.id.logout:
@@ -229,10 +240,12 @@ private void showEventsOptionsDialog() {
                 getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
                         .replace(R.id.fragment_container, new ViewEventsFragment())
                         .commit();
+                getSupportActionBar().setTitle("Events");
             } else if (which == 1) {
                 getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
                         .replace(R.id.fragment_container, new EventsFragment())
                         .commit();
+                getSupportActionBar().setTitle("Create Event");
             }
         }
     });

@@ -18,6 +18,7 @@
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/activity_user_dashboard.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/admin_approve_notice.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/blog_layout.xml" value="0.22" />
+        <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/comment_layout.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/course_list.xml" value="0.20416666666666666" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/events_layout.xml" value="0.33" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/faculty_list.xml" value="0.2028985507246377" />
@@ -29,6 +30,7 @@
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_events.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_post_notice.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_settings.xml" value="0.25" />
+        <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_trends.xml" value="0.20416666666666666" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_user_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_view_events.xml" value="0.2028985507246377" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/nav_header.xml" value="0.19701086956521738" />
@@ -37,6 +39,7 @@
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/notice_layout.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/notice_summary_layout.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/show_images_layout.xml" value="0.16847826086956522" />
+        <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/trends_layout.xml" value="0.1" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/menu/admin_drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/menu/admin_logout.xml" value="0.22" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/menu/drawer_menu.xml" value="0.20416666666666666" />

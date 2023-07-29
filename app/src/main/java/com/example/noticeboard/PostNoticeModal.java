@@ -3,6 +3,7 @@ package com.example.noticeboard;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class PostNoticeModal implements Parcelable {
@@ -20,9 +21,10 @@ public class PostNoticeModal implements Parcelable {
     private String dateTime;
     private String key;
     private long likeCount;
+    private HashMap<String, Comment> comments;
 
     public PostNoticeModal() {
-        // Empty constructor required for Firebase
+        this.comments = null;
     }
 
     public PostNoticeModal(String id, String title, String body, String imageUrl, String fileUrl, String everyone, String faculty, String course, String year, String terms, String submittedBy, String dateTime) {
@@ -194,4 +196,11 @@ public class PostNoticeModal implements Parcelable {
         dest.writeLong(likeCount);
     }
 
+    public HashMap<String, Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(HashMap<String, Comment> comments) {
+        this.comments = comments;
+    }
 }
