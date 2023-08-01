@@ -417,57 +417,6 @@ public class NoticeDetails extends AppCompatActivity {
         }
     };
 
-    // Function to share the notice details along with the image and file link (if available)
-//    private void shareNotice() {
-//        // Check if the notice image is available
-//        if (noticeImage.getVisibility() == View.VISIBLE) {
-//            // Get the notice image drawable from the ImageView
-//            Drawable noticeImageDrawable = noticeImage.getDrawable();
-//            if (noticeImageDrawable != null) {
-//                // Convert the drawable to a Bitmap
-//                Bitmap noticeImageBitmap = Utils.drawableToBitmap(noticeImageDrawable);
-//
-//                // Save the image to a local file and get its URI
-//                Uri imageUri = saveImageLocally(noticeImageBitmap);
-//
-//                if (imageUri != null) {
-//                    // Create an Intent to share the image and text
-//                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//                    shareIntent.setType("text/plain");
-//                    // Put the image URI as an extra in the Intent
-//                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//
-//                    // Add the title and body text to the shared content
-//                    String sharedText = "Notice Title: " + notice.getTitle() + "\n\n"
-//                            + "Notice Body: " + notice.getBody() + "\n\n";
-//
-//                    // Check if file link is available
-//                    String fileUrl = notice.getFileUrl();
-//                    if (fileUrl != null && !fileUrl.isEmpty()) {
-//                        sharedText += "File Link: " + fileUrl;
-//                    }
-//
-//                    // Add the shared text as an extra in the Intent
-//                    shareIntent.putExtra(Intent.EXTRA_TEXT, sharedText);
-//
-//                    // Add a subject for the shared content
-//                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Notice Details");
-//                    // Start the Intent
-//                    startActivity(Intent.createChooser(shareIntent, "Share Notice Details"));
-//                } else {
-//                    // Failed to save the image
-//                    Toast.makeText(this, "Failed to save image for sharing.", Toast.LENGTH_SHORT).show();
-//                }
-//            } else {
-//                // The notice image is not available
-//                Toast.makeText(this, "Notice image is not available for sharing.", Toast.LENGTH_SHORT).show();
-//            }
-//        } else {
-//            // The notice image is not available
-//            Toast.makeText(this, "Notice image is not available for sharing.", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     private void shareNotice() {
         // Check if the notice image is available
         if (noticeImage.getVisibility() == View.VISIBLE) {

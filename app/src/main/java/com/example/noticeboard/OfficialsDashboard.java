@@ -11,7 +11,7 @@ import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AdminDashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+public class OfficialsDashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     BottomNavigationView bottomNavigationView;
 
     @Override
@@ -30,10 +30,10 @@ public class AdminDashboard extends AppCompatActivity implements BottomNavigatio
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home);
     }
-    AdminHomeFragment homeFragment=new AdminHomeFragment();
-    CreateOfficialFragment officialsFragment=new CreateOfficialFragment();
-    AdminPostNoticeFragment postNoticeFragment=new AdminPostNoticeFragment();
-    AdminAccountFragment accountFragment=new AdminAccountFragment();
+    OfficialsHomeFragment homeFragment=new OfficialsHomeFragment();
+    OfficialsPostNoticeFragment noticeFragment=new OfficialsPostNoticeFragment();
+    SuggestionsFragment suggestionsFragment=new SuggestionsFragment();
+    OfficialsProfileFragment profileFragment=new OfficialsProfileFragment();
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -46,18 +46,18 @@ public class AdminDashboard extends AppCompatActivity implements BottomNavigatio
                         .commit();
                 return true;
 
-            case R.id.create:
+            case R.id.post:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.flFragment, officialsFragment)
+                        .replace(R.id.flFragment, noticeFragment)
                         .addToBackStack(null)
                         .commit();
                 return true;
 
-            case R.id.post:
+            case R.id.suggestions:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.flFragment, postNoticeFragment)
+                        .replace(R.id.flFragment, suggestionsFragment)
                         .addToBackStack(null)
                         .commit();
                 return true;
@@ -65,7 +65,7 @@ public class AdminDashboard extends AppCompatActivity implements BottomNavigatio
             case R.id.profile:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.flFragment, accountFragment)
+                        .replace(R.id.flFragment, profileFragment)
                         .addToBackStack(null)
                         .commit();
                 return true;

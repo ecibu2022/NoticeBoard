@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NoticeBoard">
         <activity
+            android:name=".OfficialsDashboard"
+            android:exported="false" />
+        <activity
             android:name=".NoticeDetails"
             android:exported="false" />
         <activity
@@ -65,7 +68,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>
