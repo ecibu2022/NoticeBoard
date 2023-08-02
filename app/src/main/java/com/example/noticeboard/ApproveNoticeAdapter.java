@@ -49,6 +49,7 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
     private ArrayList<PostNoticeModal> notices;
     private Context context;
     String key = "";
+    private String noticeTitle;
 
     public ApproveNoticeAdapter(Context context, ArrayList<PostNoticeModal> notices) {
         this.notices = notices;
@@ -126,7 +127,7 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         // Sending a notification to the target audience
-                                                        sendNotificationToTargetAudience(key, notice.getTitle());
+                                                        sendNotificationToTargetAudience(key);
 
                                                         // Remove the notice from the list using its noticeId
                                                         for (int i = 0; i < notices.size(); i++) {
@@ -193,12 +194,14 @@ public class ApproveNoticeAdapter extends RecyclerView.Adapter<ApproveNoticeAdap
         }
     }
 
-//    Send Notification to Target Audience
-private void sendNotificationToTargetAudience(String noticeId, String title) {
+    //    Send Notification to Target Audience
+    private void sendNotificationToTargetAudience(String noticeId) {
     DatabaseReference noticeRef = FirebaseDatabase.getInstance().getReference("Notices").child(noticeId);
     noticeRef.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            noticeTitle = dataSnapshot.child("title").getValue(String.class);
+
             // Get the target audience from the notice
             String targetAudience = dataSnapshot.child("everyone").getValue(String.class);
 
@@ -248,7 +251,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice has been posted");
+                        sendFCMNotification(userToken, "New Notice Posted", noticeTitle);
                     }
                 }
             }
@@ -271,7 +274,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, "New Notice Posted", noticeTitle);
                     }
                 }
             }
@@ -298,7 +301,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, "New Notice Posted", noticeTitle);
                     }
                 }
             }
@@ -324,7 +327,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, "New Notice Posted", noticeTitle);
                     }
                 }
             }
@@ -349,7 +352,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, "New Notice Posted", noticeTitle);
                     }
                 }
             }
@@ -361,7 +364,7 @@ private void sendNotificationToTargetAudience(String noticeId, String title) {
         });
     }
 
-private void sendFCMNotification(String userToken, String title, String body) {
+    private void sendFCMNotification(String userToken, String title, String body) {
         // Set the FCM server key from Firebase Console
         String serverKey = "AAAASxz6AZI:APA91bELTl9eqIThc_9kJ3eTYWUYoLtVr1H9MS3AQHHKtSQOPa237wk6VNoRKZMeZqEFy9gh_xxS0zw_CekNpcw-NuAlLohCB_etwwC5GNw_il-Hz39L9sv5IuCHoEdiLvKcICxtli5_";
 

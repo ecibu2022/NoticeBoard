@@ -48,7 +48,7 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
         setSupportActionBar(toolbar);
 
         // Set the title for the action bar
-        getSupportActionBar().setTitle("User Dashboard");
+        getSupportActionBar().setTitle("Home");
 
         drawerLayout=findViewById(R.id.drawer_layout);
         NavigationView navigationView=findViewById(R.id.nav_view);
@@ -194,6 +194,13 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                         .replace(R.id.fragment_container, new TrendsFragment())
                         .commit();
                 getSupportActionBar().setTitle("Trends");
+                break;
+
+            case R.id.suggestions:
+                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
+                        .replace(R.id.fragment_container, new UserSuggestionBoxFragment())
+                        .commit();
+                getSupportActionBar().setTitle("Suggestion Box");
                 break;
 
             case R.id.logout:

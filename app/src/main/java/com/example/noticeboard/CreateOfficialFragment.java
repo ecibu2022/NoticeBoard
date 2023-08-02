@@ -33,6 +33,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CreateOfficialFragment extends Fragment {
@@ -146,15 +150,15 @@ public class CreateOfficialFragment extends Fragment {
                             String Department = department.getText().toString();
                             String Email=email.getText().toString();
                             String Password=password.getText().toString();
-                            String officialID=databaseReference.push().getKey();
+                            String hashedPassword=hashPassword(Password);
                             String Role="official";
 
                            firebaseAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                @Override
                                public void onComplete(Task<AuthResult> task) {
                                    if(task.isSuccessful()){
-                                       OfficialRegistration officialRegistration=new OfficialRegistration(uri.toString(), Name, Title, Department, Email, Password, Role);
-                                       databaseReference.child(officialID).setValue(officialRegistration).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                       OfficialRegistration officialRegistration=new OfficialRegistration(uri.toString(), Name, Title, Department, Email, hashedPassword, Role);
+                                       databaseReference.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(officialRegistration).addOnCompleteListener(new OnCompleteListener<Void>() {
                                            @Override
                                            public void onComplete(Task<Void> task) {
                                                progressDialog.dismiss();
@@ -198,6 +202,30 @@ public class CreateOfficialFragment extends Fragment {
         department.setText("");
         email.setText("");
         password.setText("");
+    }
+
+    //Hashing Password using SHA-256 Algorithm
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+            // Convert the byte array to a hexadecimal string
+            StringBuilder hexString = new StringBuilder();
+            for (byte hashByte : hashBytes) {
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }

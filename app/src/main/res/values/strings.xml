@@ -53,5 +53,9 @@
     <string name="official_name">Name</string>
     <string name="official_title">Title</string>
     <string name="department">Department</string>
+    <string name="suggestion_title">Title</string>
+    <string name="suggestion_body">Body</string>
+    <string name="suggest">Suggest</string>
+    <string name="note">Your suggestion is Secure and Confidential</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

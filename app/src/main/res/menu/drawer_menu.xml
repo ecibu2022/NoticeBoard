@@ -42,6 +42,11 @@
                 android:title="Trends" />
 
             <item
+                android:id="@+id/suggestions"
+                android:icon="@drawable/box"
+                android:title="Suggestion Box" />
+
+            <item
                 android:id="@+id/faqs"
                 android:icon="@drawable/faqs"
                 android:title="FAQs" />

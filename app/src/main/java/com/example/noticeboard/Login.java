@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
@@ -193,7 +194,7 @@ public class Login extends AppCompatActivity {
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if (task.isSuccessful()) {
                                                                     Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                                                    startActivity(new Intent(Login.this, OfficialsDashboard.class));
+                                                                    startActivity(new Intent(Login.this, AdminDashboard.class));
                                                                     finish();
                                                                 } else {
                                                                     Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
@@ -212,13 +213,15 @@ public class Login extends AppCompatActivity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
+                                                        String email=dataSnapshot.child("email").getValue(String.class);
+                                                        Log.d("Email", email);
                                                         // Update the user's email in Realtime Database
                                                         databaseReference.child(userId).child("email").setValue(Email).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if (task.isSuccessful()) {
                                                                     Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                                                    startActivity(new Intent(Login.this, OfficialsDashboard.class));
+                                                                    startActivity(new Intent(Login.this, OfficialDashboard.class));
                                                                     finish();
                                                                 } else {
                                                                     Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();

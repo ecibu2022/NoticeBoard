@@ -11,13 +11,13 @@ import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class OfficialsDashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+public class OfficialDashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_dashboard);
+        setContentView(R.layout.activity_official_dashboard);
 
 //        Hiding Status bar
         hideStatusBar();
@@ -30,10 +30,11 @@ public class OfficialsDashboard extends AppCompatActivity implements BottomNavig
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home);
     }
+
     OfficialsHomeFragment homeFragment=new OfficialsHomeFragment();
-    OfficialsPostNoticeFragment noticeFragment=new OfficialsPostNoticeFragment();
+    OfficialsPostNoticeFragment postNoticeFragment=new OfficialsPostNoticeFragment();
     SuggestionsFragment suggestionsFragment=new SuggestionsFragment();
-    OfficialsProfileFragment profileFragment=new OfficialsProfileFragment();
+    OfficialsProfileFragment accountFragment=new OfficialsProfileFragment();
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -49,7 +50,7 @@ public class OfficialsDashboard extends AppCompatActivity implements BottomNavig
             case R.id.post:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.flFragment, noticeFragment)
+                        .replace(R.id.flFragment, postNoticeFragment)
                         .addToBackStack(null)
                         .commit();
                 return true;
@@ -65,7 +66,7 @@ public class OfficialsDashboard extends AppCompatActivity implements BottomNavig
             case R.id.profile:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.flFragment, profileFragment)
+                        .replace(R.id.flFragment, accountFragment)
                         .addToBackStack(null)
                         .commit();
                 return true;
