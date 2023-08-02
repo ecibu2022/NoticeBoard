@@ -1,5 +1,6 @@
 package com.example.noticeboard;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -26,7 +27,7 @@ public class UserSuggestionBoxFragment extends Fragment {
     private EditText title, body;
     private Button suggest;
     private DatabaseReference reference, usersRef;
-    private String userID;
+    private ProgressDialog suggestionDialog;
 
     public UserSuggestionBoxFragment() {
         // Required empty public constructor
@@ -43,43 +44,58 @@ public class UserSuggestionBoxFragment extends Fragment {
         reference= FirebaseDatabase.getInstance().getReference("suggestions");
         usersRef=FirebaseDatabase.getInstance().getReference("users");
 
+
+        suggestionDialog = new ProgressDialog(getContext());
+        suggestionDialog.setCancelable(false);
+        suggestionDialog.setTitle("Submitting Suggestion");
+        suggestionDialog.setMessage("Please wait.....");
+
         suggest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String Title=title.getText().toString();
-                String Body=body.getText().toString();
-                String ID=reference.push().getKey();
+                String Title = title.getText().toString();
+                String Body = body.getText().toString();
+                String ID = reference.push().getKey();
+
+                suggestionDialog.show();
 
                 usersRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        userID=snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue(String.class);
+                        // Retrieve the userID from the snapshot
+                        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                        // Create the SuggestionsModal object with the retrieved userID
+                        SuggestionsModal suggestionsModal = new SuggestionsModal(ID, Title, Body, userID);
+
+                        // Save the suggestion to the Firebase database
+                        reference.child(ID).setValue(suggestionsModal).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    suggestionDialog.dismiss();
+                                    title.setText(null);
+                                    body.setText(null);;
+                                    Toast.makeText(getContext(), "Suggestion Submitted Successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    suggestionDialog.dismiss();
+                                    Toast.makeText(getContext(), "Failed to Submit Suggestion", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(Exception e) {
+                                suggestionDialog.dismiss();
+                                Toast.makeText(getContext(), "Failed to Submit Suggestion", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-
+                        // Handle any database error that occurred while fetching the data
                     }
                 });
-
-                SuggestionsModal suggestionsModal=new SuggestionsModal(ID, Title, Body, userID);
-
-                reference.child(ID).setValue(suggestionsModal).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Toast.makeText(getContext(), "Suggestion Submitted Successfully", Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(getContext(), "Failed to Submit Suggestion", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(getContext(), "Failed to Submit Suggestion", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
             }
         });
 
