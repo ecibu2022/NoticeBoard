@@ -15,5 +15,39 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+
+    <!-- Admin Dashboard theme -->
+    <style name="AdminTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Define the primary and accent colors -->
+        <item name="colorPrimary">@color/gold</item>
+        <item name="colorPrimaryDark">@color/gold</item>
+        <item name="colorAccent">@color/gold</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Define the button color -->
+        <item name="buttonTint">@color/gold</item>
+
+        <!-- Add other customizations as needed -->
+    </style>
+
+    <!-- Officials Dashboard theme -->
+    <style name="OfficialsTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Define the primary and accent colors -->
+        <item name="colorPrimary">@color/gray</item>
+        <item name="colorPrimaryDark">@color/gray</item>
+        <item name="colorAccent">@color/gray</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Define the button color -->
+        <item name="buttonTint">@color/gray</item>
+
+        <!-- Add other customizations as needed -->
+    </style>
+
 </resources>
 

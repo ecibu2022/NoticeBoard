@@ -17,13 +17,15 @@
         android:theme="@style/Theme.NoticeBoard">
         <activity
             android:name=".OfficialDashboard"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/OfficialsTheme" />
         <activity
             android:name=".NoticeDetails"
             android:exported="false" />
         <activity
             android:name=".AdminDashboard"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AdminTheme" />
         <activity
             android:name=".ForgotPassword"
             android:exported="false"
