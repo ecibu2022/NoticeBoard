@@ -193,7 +193,7 @@ public class Login extends AppCompatActivity {
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if (task.isSuccessful()) {
                                                                     Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                                                    startActivity(new Intent(Login.this, AdminDashboard.class));
+                                                                    startActivity(new Intent(Login.this, OfficialsDashboard.class));
                                                                     finish();
                                                                 } else {
                                                                     Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
@@ -206,7 +206,33 @@ public class Login extends AppCompatActivity {
                                                     loginDialog.dismiss();
                                                 }
                                             });
-                                        }else {
+                                        }else if (role != null && role.equals("official")) {
+                                            // Update the user's email in Firebase Authentication
+                                            currentUser.updateEmail(Email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        // Update the user's email in Realtime Database
+                                                        databaseReference.child(userId).child("email").setValue(Email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                                                    startActivity(new Intent(Login.this, OfficialsDashboard.class));
+                                                                    finish();
+                                                                } else {
+                                                                    Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+                                                    } else {
+                                                        Toast.makeText(Login.this, "Failed to update email", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    loginDialog.dismiss();
+                                                }
+                                            });
+
+                                        } else {
                                             Toast.makeText(Login.this, "Login Failed. Please try again", Toast.LENGTH_SHORT).show();
                                             loginDialog.dismiss();
                                         }

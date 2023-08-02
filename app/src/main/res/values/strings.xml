@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NoticeBoard</string>
     <string name="title">Welcome to the NoticeBoard</string>
-    <string name="email">Email</string>
+    <string name="email">Email Address</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="account">Do not have an account, <b>create</b></string>
@@ -41,7 +41,7 @@
     <string name="end_time">Event End Time</string>
     <string name="location">Location</string>
     <string name="create_events">Create Event</string>
-    <string name="reset">Password Reset Link will be Sent to this Email Address</string>
+    <string name="reset">Password reset link will be sent to this Email Address</string>
     <string name="reset_button">Reset Password</string>
     <string name="helperText">Enter Strong Password</string>
     <string name="approve">Approve</string>
