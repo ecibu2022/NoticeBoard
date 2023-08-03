@@ -568,4 +568,16 @@ public class Register extends AppCompatActivity {
         return Uri.parse(path);
     }
 
+//    Going back to Login
+@Override
+public void onBackPressed() {
+    if (this.getClass() == Register.class) {
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
+        finish();
+    }
+
+}
+
+
 }

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,10 +72,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OfficialsHomeFragment extends Fragment {
     private RecyclerView myNotices;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference, userRef;
     private List<PostNoticeModal> notices;
-    private ApproveNoticeAdapter noticeAdapter;
+    private OfficialsNoticeAdapter noticeAdapter;
     private FirebaseAuth mAuth;
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
     public OfficialsHomeFragment() {
         // Required empty public constructor
@@ -91,7 +94,7 @@ public class OfficialsHomeFragment extends Fragment {
         myNotices.setLayoutManager(new LinearLayoutManager(getContext()));
 
         notices = new ArrayList<>();
-        noticeAdapter = new ApproveNoticeAdapter(getContext(), (ArrayList<PostNoticeModal>) notices);
+        noticeAdapter = new OfficialsNoticeAdapter(getContext(), (ArrayList<PostNoticeModal>) notices);
         myNotices.setAdapter(noticeAdapter);
 
         ProgressDialog progressDialog = new ProgressDialog(requireContext());
@@ -100,36 +103,28 @@ public class OfficialsHomeFragment extends Fragment {
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("approved_notices");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                notices.clear();
-                // Fetch the user's ID from FirebaseAuth
-                String userId = mAuth.getCurrentUser().getUid();
+                UserRegistrationModal user = snapshot.getValue(UserRegistrationModal.class);
+                String userName = user.getFullName();
 
-                // Get a reference to the "users" node in Firebase
-                DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users");
-
-                // Retrieve the user's role from Firebase using the user ID
-                usersReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference = FirebaseDatabase.getInstance().getReference("approved_notices");
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            String userRole = dataSnapshot.child("role").getValue(String.class);
-                            if (userRole != null) {
-                                // Filter the notices based on the user's role and ID
-                                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                                    PostNoticeModal myNotices = itemSnapshot.getValue(PostNoticeModal.class);
-                                    if (myNotices.getSubmittedBy().equals(userId)) {
-                                        notices.add(myNotices);
-                                    }
-                                }
-                                // Sort the notices list based on date and time (newest on top)
-                                sortNoticesByDateTime(notices);
-                                noticeAdapter.notifyDataSetChanged();
+                    public void onDataChange(DataSnapshot snapshot) {
+                        notices.clear();
+                        for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                            PostNoticeModal myNotices = itemSnapshot.getValue(PostNoticeModal.class);
+                            // Check if the notice is submitted by the specific user (based on name)
+                            if (myNotices.getSubmittedBy().equals(userName)) {
+                                notices.add(myNotices);
                             }
                         }
+                        // Sort the notices list based on date and time (newest on top)
+                        sortNoticesByDateTime(notices);
+                        noticeAdapter.notifyDataSetChanged();
                         progressDialog.dismiss();
                     }
 
@@ -144,33 +139,11 @@ public class OfficialsHomeFragment extends Fragment {
             public void onCancelled(DatabaseError error) {
                 progressDialog.dismiss();
             }
-
         });
+
 
         return view;
     }
-
-    public void logoutDialog(){
-        AlertDialog.Builder logout=new AlertDialog.Builder(getContext());
-        logout.setTitle("Logging Out?");
-        logout.setMessage("Please Confirm!");
-        logout.setCancelable(false);
-        logout.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mAuth.signOut();
-                startActivity(new Intent(getContext(), Login.class));
-            }
-        });
-        logout.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getContext(), "Logout Cancelled", Toast.LENGTH_SHORT).show();
-            }
-        });
-        logout.show(); // Show the AlertDialog
-    }
-
 
     //Retrieving the notices based on newest first
     private void sortNoticesByDateTime(List<PostNoticeModal> notices) {

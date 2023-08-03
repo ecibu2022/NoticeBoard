@@ -91,7 +91,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     private DatabaseReference usersRef, noticeRef, adminTokenRef;
     private StorageReference storageReference;
     private FirebaseUser currentUser;
-    private String noticeID;
+    private String noticeID, Title;
 
     private static final int REQUEST_PICK_FILE = 2;
 
@@ -234,7 +234,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                 if (snapshot.exists()) {
                     noticeID=noticeRef.push().getKey();
                     String submittedBy = snapshot.child("fullName").getValue(String.class);
-                    String Title = title.getText().toString().trim();
+                    Title = title.getText().toString().trim();
                     String Body = body.getText().toString().trim();
                     String Everyone = null;
                     String Faculty = null;
@@ -313,10 +313,10 @@ public class OfficialsPostNoticeFragment extends Fragment {
                 // Query the users with the specified target audience from the database
                 DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
                 // If the target audience is everyone, query all users with the user role
-                queryUsersByRole("user");
+                queryUsersByRole("user", Title);
 
                 if ("everyone".equals(targetAudience)) {
-                    queryAllUsers();
+                    queryAllUsers(Title);
                 } else {
                     // If the target audience is not everyone, query based on faculty, course, and year
                     String faculty = dataSnapshot.child("faculty").getValue(String.class);
@@ -325,13 +325,13 @@ public class OfficialsPostNoticeFragment extends Fragment {
 
                     if (faculty != null && !faculty.isEmpty() && course != null && !course.isEmpty() && year != null && !year.isEmpty()) {
                         // Query based on faculty, course, and year
-                        queryUsersByFacultyCourseYear(faculty, course, year);
+                        queryUsersByFacultyCourseYear(faculty, course, year, Title);
                     } else if (faculty != null && !faculty.isEmpty() && course != null && !course.isEmpty()) {
                         // Query based on faculty and course
-                        queryUsersByFacultyCourse(faculty, course);
+                        queryUsersByFacultyCourse(faculty, course, Title);
                     } else {
                         // Query based on faculty only
-                        queryUsersByFaculty(faculty);
+                        queryUsersByFaculty(faculty, Title);
                     }
                 }
             }
@@ -344,7 +344,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     }
 
     // Query users based on their role
-    private void queryUsersByRole(String role) {
+    private void queryUsersByRole(String role, String noticeTitle) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         Query roleQuery = usersRef.orderByChild("role").equalTo(role);
 
@@ -356,7 +356,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice has been posted");
+                        sendFCMNotification(userToken, noticeTitle);
                     }
                 }
             }
@@ -369,7 +369,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     }
 
     // Query all users
-    private void queryAllUsers() {
+    private void queryAllUsers(String noticeTitle) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -379,7 +379,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, noticeTitle);
                     }
                 }
             }
@@ -392,7 +392,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     }
 
     // Query users based on faculty, course, and year
-    private void queryUsersByFacultyCourseYear(String faculty, String course, String year) {
+    private void queryUsersByFacultyCourseYear(String faculty, String course, String year, String noticeTitle) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         Query facultyCourseYearQuery = usersRef.orderByChild("faculty").equalTo(faculty)
                 .orderByChild("course").equalTo(course)
@@ -406,7 +406,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, noticeTitle);
                     }
                 }
             }
@@ -419,7 +419,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     }
 
     // Query users based on faculty and course
-    private void queryUsersByFacultyCourse(String faculty, String course) {
+    private void queryUsersByFacultyCourse(String faculty, String course, String noticeTitle) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         Query facultyCourseQuery = usersRef.orderByChild("faculty").equalTo(faculty)
                 .orderByChild("course").equalTo(course);
@@ -432,7 +432,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, noticeTitle);
                     }
                 }
             }
@@ -445,7 +445,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
     }
 
     // Query users based on faculty only
-    private void queryUsersByFaculty(String faculty) {
+    private void queryUsersByFaculty(String faculty, String noticeTitle) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         Query facultyQuery = usersRef.orderByChild("faculty").equalTo(faculty);
 
@@ -457,7 +457,7 @@ public class OfficialsPostNoticeFragment extends Fragment {
                     String userToken = userSnapshot.child("deviceToken").getValue(String.class);
                     if (userToken != null) {
                         // Send the notification using FCM
-                        sendFCMNotification(userToken, "New Notice Posted", "A new notice is available");
+                        sendFCMNotification(userToken, noticeTitle);
                     }
                 }
             }
@@ -469,14 +469,14 @@ public class OfficialsPostNoticeFragment extends Fragment {
         });
     }
 
-    private void sendFCMNotification(String userToken, String title, String body) {
+    private void sendFCMNotification(String userToken, String title) {
         // Set the FCM server key from Firebase Console
         String serverKey = "AAAASxz6AZI:APA91bELTl9eqIThc_9kJ3eTYWUYoLtVr1H9MS3AQHHKtSQOPa237wk6VNoRKZMeZqEFy9gh_xxS0zw_CekNpcw-NuAlLohCB_etwwC5GNw_il-Hz39L9sv5IuCHoEdiLvKcICxtli5_";
 
         // Create the FCM message data payload (customize as needed)
         Map<String, String> data = new HashMap<>();
-        data.put("title", title);
-        data.put("body", body);
+        data.put("title", "New Notice Posted");
+        data.put("body", title);
 
         // Create the FCM message body
         Map<String, Object> message = new HashMap<>();

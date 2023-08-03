@@ -1,7 +1,11 @@
 package com.example.noticeboard;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class OfficialDashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     BottomNavigationView bottomNavigationView;
+    DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +28,7 @@ public class OfficialDashboard extends AppCompatActivity implements BottomNaviga
         hideStatusBar();
 
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
+        drawerLayout=findViewById(R.id.drawer_layout);
 
         //        Makes Home active when back button is clicked either in settings or profile it goes back to home
         getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, homeFragment).commit();
@@ -85,6 +91,31 @@ public class OfficialDashboard extends AppCompatActivity implements BottomNaviga
             int systemUiVisibilityFlags = View.SYSTEM_UI_FLAG_FULLSCREEN;
             decorView.setSystemUiVisibility(systemUiVisibilityFlags);
         }
+    }
+
+    //Going back to Login
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            // Check if the current fragment is the AdminHomeFragment
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.flFragment);
+            if (currentFragment instanceof OfficialsHomeFragment) {
+                // If it is, navigate to the LoginActivity
+                navigateToLogin();
+            } else {
+                // If it's not, perform the default back button behavior
+                super.onBackPressed();
+            }
+        }
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, Login.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 }

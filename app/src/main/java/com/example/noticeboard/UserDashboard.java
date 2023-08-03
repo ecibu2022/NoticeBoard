@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -144,16 +145,6 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
     }
 
     @Override
-    public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }else{
-            super.onBackPressed();
-        }
-
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
 
@@ -258,5 +249,29 @@ private void showEventsOptionsDialog() {
     });
     builder.show();
 }
+
+//Going back to Login
+@Override
+public void onBackPressed() {
+    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        drawerLayout.closeDrawer(GravityCompat.START);
+    } else {
+        // Check if the current fragment is the HomeFragment
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof UserHomeFragment) {
+            // Navigate to the LoginActivity
+            navigateToLogin();
+        } else {
+            super.onBackPressed();
+        }
+    }
+}
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, Login.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
 
 }
