@@ -102,7 +102,7 @@ public class AdminPostNoticeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_post_notice, container, false);
+        View view = inflater.inflate(R.layout.fragment_admin_post_notice, container, false);
         uploadImage = view.findViewById(R.id.noticeImage);
         fileEditText = view.findViewById(R.id.fileEditText);
         Button browseFileButton = view.findViewById(R.id.browseFileButton);

@@ -96,7 +96,8 @@
                     android:text="@string/approve"
                     android:textAppearance="?attr/textAppearanceBody2"
                     android:textColor="@color/white"
-                    android:backgroundTint="?attr/buttonTint" />
+                    app:backgroundTint="@color/gold"
+                    android:background="@drawable/rounded_button" />
 
             </LinearLayout>
 

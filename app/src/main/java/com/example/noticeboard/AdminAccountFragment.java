@@ -33,10 +33,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class AdminAccountFragment extends Fragment {
     private View formContainer;
     private Button editProfileButton, update_profile;
-    private ImageView profile_picture, editImage;
+    private ImageView editImage;
+    private CircleImageView profile_picture;
     String imageUrl;
     private TextView full_name, email, editName, editEmail;
 
@@ -60,7 +63,7 @@ public class AdminAccountFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         formContainer = view.findViewById(R.id.formContainer);
         editProfileButton = view.findViewById(R.id.editProfile);
-        profile_picture=view.findViewById(R.id.profile_picture);
+        profile_picture=view.findViewById(R.id.profile_image);
         full_name=view.findViewById(R.id.full_name);
         email=view.findViewById(R.id.email);
 
@@ -100,7 +103,6 @@ public class AdminAccountFragment extends Fragment {
                 imageUrl=snapshot.child("profileImage").getValue(String.class);
                 String FullName = snapshot.child("fullName").getValue(String.class);
                 String Email = snapshot.child("email").getValue(String.class);
-
 
                 // Set the TextViews with the user data
                 Glide.with(getContext()).load(imageUrl).into(profile_picture);

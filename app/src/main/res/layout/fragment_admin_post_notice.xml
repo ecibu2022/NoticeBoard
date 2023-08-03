@@ -99,7 +99,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody2"
                     android:textColor="@color/white"
-                    android:backgroundTint="@color/gold"
+                    app:backgroundTint="@color/gold"
+                    android:background="@drawable/rounded_button"
                     android:text="Browse" />
 
             </LinearLayout>
@@ -225,7 +226,8 @@
                 android:layout_marginBottom="8dp"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/gold"
+                app:backgroundTint="@color/gold"
+                android:background="@drawable/rounded_button"
                 android:text="@string/post" />
 
         </LinearLayout>
