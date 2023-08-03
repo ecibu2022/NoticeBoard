@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@color/background"
     tools:context=".OfficialsProfileFragment">
 
     <ScrollView
@@ -13,226 +14,205 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="5dp">
+            android:padding="12dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardView"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginBottom="-5dp"
+                android:src="@drawable/logo"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardElevation="3dp"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
+                android:layout_marginTop="18dp"
+                android:background="@drawable/rounded_layout"
+                android:orientation="vertical"
+                android:layout_margin="15dp"
+                android:padding="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/profile_picture"
-                        android:layout_width="match_parent"
-                        android:layout_height="230dp"
-                        app:srcCompat="@drawable/logo"
-                        android:scaleType="centerCrop"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/person"
+                        app:tint="@color/gray"
                         />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/full_name"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/name"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceHeadline6"
-                                />
-
-                            <TextView
-                                android:id="@+id/full_name"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/name"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceHeadline6"
-                                />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:text="@string/email"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceBody2"
-                                android:textColor="?android:attr/textColorSecondary" />
-
-                            <TextView
-                                android:id="@+id/email"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:text="@string/email"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceBody2"
-                                android:textColor="?android:attr/textColorSecondary" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:text="@string/department"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceBody2"
-                                android:textColor="?android:attr/textColorSecondary" />
-
-                            <TextView
-                                android:id="@+id/department"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:text="@string/department"
-                                android:layout_weight="1"
-                                android:textAppearance="?attr/textAppearanceBody2"
-                                android:textColor="?android:attr/textColorSecondary" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:dividerInsetStart="16dp"
-                        app:dividerInsetEnd="16dp"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/editProfile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginEnd="32dp"
-                        android:text="@string/edit_profile"
-                        style="?attr/borderlessButtonStyle"
-                        android:textColor="@color/white"
-                        app:backgroundTint="@color/gray"
+                        android:text="@string/name"
+                        android:layout_weight="1"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="18dp"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
                         />
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/school"
+                        app:tint="@color/gray"
+                        />
+
+                    <TextView
+                        android:id="@+id/department"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/department"
+                        android:layout_weight="1"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="18dp"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_baseline_email_24"
+                        app:tint="@color/gray"
+                        />
+
+                    <TextView
+                        android:id="@+id/email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email"
+                        android:layout_weight="1"
+                        android:layout_marginStart="18dp"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/editProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="@string/edit_profile"
+                    style="?attr/borderlessButtonStyle"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/gray"
+                    android:background="@drawable/rounded_button"
+                    />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/formContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:visibility="gone"
                 android:layout_below="@+id/cardView">
 
-                <!--        Form Elements-->
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_layout"
+                    android:padding="16dp">
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:text="@string/profile_picture"
+                        android:layout_marginTop="8dp"  />
 
-                        <TextView
+                    <ImageView
+                        android:id="@+id/editImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        app:srcCompat="@drawable/upload"
+                        android:scaleType="centerCrop"
+                        android:layout_marginBottom="-20dp"
+                        />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="-20dp"
+                        android:hint="@string/name"
+                        app:boxBackgroundColor="@color/white"
+                        app:startIconDrawable="@drawable/person"
+                        app:startIconTint="@color/gold">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editName"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/profile_picture"
-                            android:layout_marginTop="8dp"  />
+                            android:layout_height="wrap_content" />
 
-                        <ImageView
-                            android:id="@+id/editImage"
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="13dp"
+                        android:hint="@string/email"
+                        app:boxBackgroundColor="@color/white"
+                        app:startIconDrawable="@drawable/email"
+                        app:startIconTint="@color/gold">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editEmail"
                             android:layout_width="match_parent"
-                            android:layout_height="220dp"
-                            app:srcCompat="@drawable/upload"
-                            android:scaleType="fitXY"
-                            />
+                            android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/name"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    <Button
+                        android:id="@+id/update_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="15dp"
+                        android:text="@string/update_profile"
+                        app:backgroundTint="@color/gray"
+                        android:background="@drawable/rounded_button"
+                        android:textColor="@android:color/white" />
 
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/editName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/email"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/editEmail"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"/>
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <Button
-                            android:id="@+id/update_profile"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginEnd="15dp"
-                            android:text="@string/update_profile"
-                            app:backgroundTint="@color/gray"
-                            android:textColor="@android:color/white" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -33,10 +33,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class OfficialsProfileFragment extends Fragment {
     private View formContainer;
     private Button editProfileButton, update_profile;
-    private ImageView profile_picture, editImage;
+    private ImageView editImage;
+    private CircleImageView profile_picture;
     String imageUrl;
     private TextView full_name, email, editName, editEmail, department;
 
@@ -60,7 +63,7 @@ public class OfficialsProfileFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         formContainer = view.findViewById(R.id.formContainer);
         editProfileButton = view.findViewById(R.id.editProfile);
-        profile_picture=view.findViewById(R.id.profile_picture);
+        profile_picture=view.findViewById(R.id.profile_image);
         full_name=view.findViewById(R.id.full_name);
         email=view.findViewById(R.id.email);
         department=view.findViewById(R.id.department);

@@ -36,10 +36,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class EditProfileFragment extends Fragment {
     private View formContainer;
     private Button editProfileButton, update_profile;
-    private ImageView profile_picture, editImage;
+    private ImageView editImage;
+    private CircleImageView profile_picture;
     String imageUrl;
     private TextView full_name, reg_no, faculty, course, email, editName, editEmail;
 
@@ -62,7 +65,7 @@ public class EditProfileFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         formContainer = view.findViewById(R.id.formContainer);
         editProfileButton = view.findViewById(R.id.editProfile);
-        profile_picture=view.findViewById(R.id.profile_picture);
+        profile_picture=view.findViewById(R.id.profile_image);
         full_name=view.findViewById(R.id.full_name);
         reg_no=view.findViewById(R.id.reg_no);
         faculty=view.findViewById(R.id.faculty);
