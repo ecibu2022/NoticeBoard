@@ -43,8 +43,6 @@ public class OfficialsNoticeAdapter extends RecyclerView.Adapter<OfficialsNotice
         PostNoticeModal notice = notices.get(position);
         holder.noticeTitle.setText(notice.getTitle());
         holder.noticeBody.setText(notice.getBody());
-        holder.postedBy.setText("Posted by " + notice.getSubmittedBy());
-        holder.dateTime.setText("On " + notice.getDateTime());
 
         // Set file URL to the fileLinks TextView
         String fileUrl = notice.getFileUrl();
@@ -68,11 +66,12 @@ public class OfficialsNoticeAdapter extends RecyclerView.Adapter<OfficialsNotice
             public void onClick(View view) {
                 // Open a new activity for details
                 @SuppressLint("UnsafeOptInUsageError")
-                Intent intent = new Intent(context, NoticeDetails.class);
+                Intent intent = new Intent(context, OfficialsNoticeDetails.class);
                 intent.putExtra("notice", notice);
                 context.startActivity(intent);
             }
         });
+
     }
 
     @Override
@@ -81,7 +80,7 @@ public class OfficialsNoticeAdapter extends RecyclerView.Adapter<OfficialsNotice
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView noticeTitle, noticeBody, postedBy, dateTime, fileLinks;
+        private TextView noticeTitle, noticeBody, fileLinks;
         private ImageView noticeImage;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -89,8 +88,6 @@ public class OfficialsNoticeAdapter extends RecyclerView.Adapter<OfficialsNotice
 
             noticeTitle = itemView.findViewById(R.id.noticeTitle);
             noticeBody = itemView.findViewById(R.id.noticeBody);
-            postedBy = itemView.findViewById(R.id.postedBy);
-            dateTime = itemView.findViewById(R.id.dateTime);
             fileLinks = itemView.findViewById(R.id.fileLinks);
             noticeImage = itemView.findViewById(R.id.noticeImage);
         }

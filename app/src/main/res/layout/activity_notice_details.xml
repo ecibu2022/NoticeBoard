@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/background"
     tools:context=".NoticeDetails">
 
     <ScrollView
@@ -16,13 +17,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="3dp"
+                android:background="@drawable/rounded_layout"
+                android:orientation="vertical"
                 app:contentPadding="5dp">
 
                 <LinearLayout
@@ -34,9 +34,9 @@
                     <ImageView
                         android:id="@+id/noticeImage"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:src="@drawable/logo"
-                        android:scaleType="fitXY"/>
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -155,7 +155,7 @@
 
                     </LinearLayout>
 
-                    <!--            Comment Form-->
+                    <!--Comment Form-->
                     <LinearLayout
                         android:id="@+id/formContainer"
                         android:layout_width="match_parent"
@@ -166,9 +166,13 @@
                         android:visibility="gone"
                         android:layout_below="@+id/cardView">
 
-                        <com.google.android.material.card.MaterialCardView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:background="@drawable/rounded_layout"
+                            android:orientation="vertical"
+                            app:contentPadding="5dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -182,16 +186,19 @@
                                     android:orientation="horizontal">
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                        android:hint="Write your comment here"
+                                        style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight="1">
+                                        android:layout_marginStart="12dp"
+                                        android:layout_marginEnd="13dp"
+                                        android:hint="Write your comment"
+                                        android:layout_weight="1"
+                                        app:boxBackgroundColor="@color/white">
 
                                         <com.google.android.material.textfield.TextInputEditText
                                             android:id="@+id/noticeComment"
                                             android:layout_width="match_parent"
-                                            android:layout_height="wrap_content" />
+                                            android:layout_height="wrap_content"/>
 
                                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -208,15 +215,16 @@
 
                             </LinearLayout>
 
-                        </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
             <TextView
+                android:id="@+id/commentTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Comments"

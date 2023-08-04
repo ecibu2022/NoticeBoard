@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NoticeBoard">
         <activity
+            android:name=".OfficialsNoticeDetails"
+            android:exported="false" />
+        <activity
             android:name=".OfficialDashboard"
             android:exported="false"
             android:theme="@style/OfficialsTheme" />

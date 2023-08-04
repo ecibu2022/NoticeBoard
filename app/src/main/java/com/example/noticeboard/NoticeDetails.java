@@ -63,7 +63,6 @@ public class NoticeDetails extends AppCompatActivity {
     private FirebaseUser currentUser;
     PostNoticeModal notice;
     private boolean isLikedByCurrentUser = false;
-    private String imageUrl, FullName;
     private RecyclerView commentsRecyclerView;
     private List<Comment> comments;
     private CommentAdapter commentAdapter;
@@ -236,13 +235,66 @@ public class NoticeDetails extends AppCompatActivity {
         submitComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String commentText = comment.getText().toString().trim();
+                String userId = currentUser.getUid();
+                String timeCommented = getCurrentDateTime();
+                String commentId = noticeRef.push().getKey();
+
+                if (commentText.isEmpty()) {
+                    comment.setError("Comment Box is Empty");
+                    comment.requestFocus();
+                    return;
+                }
+
                 // Retrieve the user's profile data from Firebase
-                usersRef.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         // Get the user data from the snapshot
-                        imageUrl = snapshot.child("profileImage").getValue(String.class);
-                        FullName = snapshot.child("fullName").getValue(String.class);
+                        String imageUrl = snapshot.child("profileImage").getValue(String.class);
+                        String fullName = snapshot.child("fullName").getValue(String.class);
+
+                        // Create a new Comment object
+                        Comment newComment = new Comment(commentId, commentText, userId, imageUrl, fullName, timeCommented);
+
+                        // Add the comment to the notice
+                        noticeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                PostNoticeModal notice = snapshot.getValue(PostNoticeModal.class);
+
+                                if (notice != null) {
+                                    // Initialize comments HashMap if necessary
+                                    if (notice.getComments() == null) {
+                                        notice.setComments(new HashMap<>());
+                                    }
+
+                                    // Add the new comment to the HashMap
+                                    notice.getComments().put(commentId, newComment);
+
+                                    // Update the notice in the database
+                                    noticeRef.setValue(notice)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    formContainer.setVisibility(View.GONE);
+                                                    Toast.makeText(NoticeDetails.this, "Comment Sent Successfully", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(NoticeDetails.this, "Error Failed to Post Comment " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                // Handle database read error
+                            }
+                        });
                     }
 
                     @Override
@@ -250,62 +302,6 @@ public class NoticeDetails extends AppCompatActivity {
                         // Handle database error
                     }
                 });
-
-                String Comment=comment.getText().toString().trim();
-                String userID=currentUser.getUid();
-                String timeCommented=getCurrentDateTime();
-                String commentId=noticeRef.push().getKey();
-                if(Comment.isEmpty()){
-                    comment.setError("Comment Box is Empty");
-                    comment.requestFocus();
-                    return;
-                }else{
-                    noticeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            // Get the PostNoticeModal object from the database
-                            PostNoticeModal notice = snapshot.getValue(PostNoticeModal.class);
-
-                            // Check if comments field is null
-                            if (notice != null && notice.getComments() != null) {
-                                // The comments field is not null, so add the comment to the existing HashMap
-                                HashMap<String, Comment> comments = notice.getComments();
-                                Comment newComment = new Comment(commentId, Comment, userID, imageUrl, FullName, timeCommented);
-                                comments.put(commentId, newComment);
-                                notice.setComments(comments);
-                            } else {
-                                // The comments field is null, so initialize a new HashMap and add the comment
-                                HashMap<String, Comment> comments = new HashMap<>();
-                                Comment newComment = new Comment(commentId, Comment, userID, imageUrl, FullName, timeCommented);
-                                comments.put(commentId, newComment);
-                                notice.setComments(comments);
-                            }
-
-                            // Save the updated PostNoticeModal object back to the database
-                            noticeRef.setValue(notice)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            formContainer.setVisibility(View.GONE);
-                                            Toast.makeText(NoticeDetails.this, "Comment Sent Successfully", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(NoticeDetails.this, "Error Failed to Post Comment "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            // Handle database read error
-                        }
-                    });
-
-
-                }
             }
         });
 
