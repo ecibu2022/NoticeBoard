@@ -92,6 +92,7 @@ public class AdminPostNoticeFragment extends Fragment {
     private StorageReference storageReference;
     private FirebaseUser currentUser;
     private String noticeID, Title;
+    private PostNoticeModal notice;
 
     private static final int REQUEST_PICK_FILE = 2;
 
@@ -132,6 +133,8 @@ public class AdminPostNoticeFragment extends Fragment {
         facultyTextView.setAdapter(myFaculty);
         courseTextView.setAdapter(myCourse);
         yearTextView.setAdapter(myYear);
+
+        notice=new PostNoticeModal();
 
 //        Choose image
         uploadImage.setOnClickListener(new View.OnClickListener() {
@@ -249,22 +252,24 @@ public class AdminPostNoticeFragment extends Fragment {
 
                     if (everyone.isChecked()) {
                         Everyone = "Everyone";
-                    } else if (!selectedCourse.isEmpty() && selectedYear.isEmpty()) {
+                        Faculty=null;
+                        Course=null;
+                        Year=null;
+                    } else if (selectedFaculty.isEmpty() && !selectedCourse.isEmpty() && selectedYear.isEmpty()) {
                         // Specific Course
-                        Faculty = facultyTextView.getText().toString().trim();
-                        Course = courseTextView.getText().toString().trim();
-                    } else if (!selectedYear.isEmpty() && selectedCourse.isEmpty()) {
+                        Faculty=null;
+                        Course = facultyTextView.getText().toString().trim()+"_"+ courseTextView.getText().toString().trim();
+                        Year=null;
+                    } else if (!selectedFaculty.isEmpty() && !selectedCourse.isEmpty() && !selectedYear.isEmpty()) {
                         // Specific Year
-                        Faculty = facultyTextView.getText().toString().trim();
-                        Year = yearTextView.getText().toString().trim();
-                    } else if (!selectedCourse.isEmpty() && !selectedYear.isEmpty()) {
-                        // Specific Course and Year
-                        Faculty = facultyTextView.getText().toString().trim();
-                        Course = courseTextView.getText().toString().trim();
-                        Year = yearTextView.getText().toString().trim();
-                    } else if (!selectedFaculty.isEmpty()) {
+                        Faculty=null;
+                        Course=null;
+                        Year = facultyTextView.getText().toString().trim()+"_"+courseTextView.getText().toString().trim()+"_"+yearTextView.getText().toString().trim();
+                    } else if (!selectedFaculty.isEmpty() && selectedCourse.isEmpty() && selectedYear.isEmpty()) {
                         // Specific Faculty
                         Faculty = facultyTextView.getText().toString().trim();
+                        Course=null;
+                        Year=null;
                     }
 
                     // Create a new notice object with the data
