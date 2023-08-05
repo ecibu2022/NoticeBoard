@@ -95,6 +95,12 @@ public class UserHomeFragment extends Fragment {
                     // Filter based on faculty
                     Query facultyQuery = noticesRef.orderByChild("faculty").equalTo(userFaculty);
 
+                    // Filter based on faculty
+                    Query courseQuery = noticesRef.orderByChild("course").equalTo(userFaculty+"_"+userCourse);
+
+                    // Filter based on faculty
+                    Query yearQuery = noticesRef.orderByChild("year").equalTo(userFaculty+"_"+userCourse+"_"+userYear);
+
                     everyoneQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -127,22 +133,60 @@ public class UserHomeFragment extends Fragment {
                             for (DataSnapshot noticeSnapshot : dataSnapshot.getChildren()) {
                                 PostNoticeModal notice = noticeSnapshot.getValue(PostNoticeModal.class);
                                 noticesMap.put(noticeSnapshot.getKey(), notice);
-
-                                String faculty = noticeSnapshot.child("faculty").getValue(String.class);
-                                String course = noticeSnapshot.child("course").getValue(String.class);
-                                String year = noticeSnapshot.child("year").getValue(String.class);
-
-                                if (faculty.equals(userFaculty)) {
-
-                                    List<PostNoticeModal> sortedNotices = new ArrayList<>(noticesMap.values());
-                                    sortNoticesByDateTime(sortedNotices);
-                                    notices.addAll(sortedNotices);
-                                }
-
                             }
+                            List<PostNoticeModal> sortedNotices = new ArrayList<>(noticesMap.values());
+                            sortNoticesByDateTime(sortedNotices);
 
                             // Update your adapter with the sorted notices
-                            //        notices.addAll(sortedNotices);
+                            notices.addAll(sortedNotices);
+                            noticeAdapter.notifyDataSetChanged();
+                            progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            progressDialog.dismiss();
+                        }
+                    });
+
+                    courseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            HashMap<String, PostNoticeModal> noticesMap = new HashMap<>();
+
+                            for (DataSnapshot noticeSnapshot : dataSnapshot.getChildren()) {
+                                PostNoticeModal notice = noticeSnapshot.getValue(PostNoticeModal.class);
+                                noticesMap.put(noticeSnapshot.getKey(), notice);
+                            }
+                            List<PostNoticeModal> sortedNotices = new ArrayList<>(noticesMap.values());
+                            sortNoticesByDateTime(sortedNotices);
+
+                            // Update your adapter with the sorted notices
+                            notices.addAll(sortedNotices);
+                            noticeAdapter.notifyDataSetChanged();
+                            progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            progressDialog.dismiss();
+                        }
+                    });
+
+                    yearQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            HashMap<String, PostNoticeModal> noticesMap = new HashMap<>();
+
+                            for (DataSnapshot noticeSnapshot : dataSnapshot.getChildren()) {
+                                PostNoticeModal notice = noticeSnapshot.getValue(PostNoticeModal.class);
+                                noticesMap.put(noticeSnapshot.getKey(), notice);
+                            }
+                            List<PostNoticeModal> sortedNotices = new ArrayList<>(noticesMap.values());
+                            sortNoticesByDateTime(sortedNotices);
+
+                            // Update your adapter with the sorted notices
+                            notices.addAll(sortedNotices);
                             noticeAdapter.notifyDataSetChanged();
                             progressDialog.dismiss();
                         }
@@ -162,35 +206,6 @@ public class UserHomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Error retrieving user data", Toast.LENGTH_SHORT).show();
             }
         });
-
-//        noticesRef.child(noticeID).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                List<PostNoticeModal> filteredNotices = new ArrayList<>();
-//
-//                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                    String faculty = dataSnapshot.child("faculty").getValue(String.class);
-//                    String course = dataSnapshot.child("course").getValue(String.class);
-//                    String year = dataSnapshot.child("year").getValue(String.class);
-//
-//                    if (faculty.equals(userFaculty) && course.equals(userCourse) && year.equals(userYear)) {
-//                        PostNoticeModal notice = dataSnapshot.getValue(PostNoticeModal.class);
-//                        filteredNotices.add(notice);
-//                    }
-//                }
-//
-//                // Update your adapter with the filtered notices
-//                notices.addAll(filteredNotices);
-//                noticeAdapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//
-//            }
-//        });
-
-
 
         return view;
     }
