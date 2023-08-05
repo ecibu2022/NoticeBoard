@@ -22,6 +22,7 @@ public class PostNoticeModal implements Parcelable {
     private String key;
     private long likeCount;
     private HashMap<String, Comment> comments;
+    private String originalFileName;
 
     public PostNoticeModal() {
         this.comments = null;
@@ -182,6 +183,15 @@ public class PostNoticeModal implements Parcelable {
 
     public void setLikeCount(long likeCount) {
         this.likeCount = likeCount;
+    }
+
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     @Override

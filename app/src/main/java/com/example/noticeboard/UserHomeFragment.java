@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -247,12 +248,31 @@ public class UserHomeFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Handle query text change
-                return false;
+                // Filter notices based on the search query
+                Log.d("Search", "Query: " + newText);
+                List<PostNoticeModal> filteredNotices = filterNoticesByTitle(notices, newText);
+                noticeAdapter.setFilteredList(filteredNotices);
+                return true;
             }
         });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    private List<PostNoticeModal> filterNoticesByTitle(List<PostNoticeModal> notices, String query) {
+        Log.d("Search", "Filtering: " + query);
+        query = query.toLowerCase(Locale.getDefault());
+        List<PostNoticeModal> filteredNotices = new ArrayList<>();
+
+        for (PostNoticeModal notice : notices) {
+            if (notice.getTitle().toLowerCase(Locale.getDefault()).contains(query)) {
+                filteredNotices.add(notice);
+            }
+        }
+
+        return filteredNotices;
+    }
+
+
 }
 

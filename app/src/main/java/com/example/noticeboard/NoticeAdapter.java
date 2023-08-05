@@ -24,6 +24,7 @@ import java.util.List;
 public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHolder> {
     private ArrayList<PostNoticeModal> notices;
     private Context context;
+    private ArrayList<PostNoticeModal> filteredNotices;
 
     public NoticeAdapter(Context context, ArrayList<PostNoticeModal> notices) {
         this.notices = notices;
@@ -48,7 +49,9 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         // Set file URL to the fileLinks TextView
         String fileUrl = notice.getFileUrl();
         if (fileUrl != null && !fileUrl.isEmpty()) {
-            holder.fileLinks.setVisibility(View.GONE);
+            holder.fileLinks.setVisibility(View.VISIBLE);
+            String originalFileName = notice.getOriginalFileName();
+            holder.fileLinks.setText(originalFileName);
         } else {
             holder.fileLinks.setVisibility(View.GONE);
         }
@@ -73,6 +76,13 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
             }
         });
     }
+
+    public void setFilteredList(List<PostNoticeModal> filteredNotices) {
+        this.notices = (ArrayList<PostNoticeModal>) filteredNotices;
+        notifyDataSetChanged();
+    }
+
+
 
     @Override
     public int getItemCount() {

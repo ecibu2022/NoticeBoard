@@ -194,6 +194,13 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                 getSupportActionBar().setTitle("Suggestion Box");
                 break;
 
+            case R.id.faqs:
+                getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
+                        .replace(R.id.fragment_container, new FAQsFragment())
+                        .commit();
+                getSupportActionBar().setTitle("FAQs");
+                break;
+
             case R.id.logout:
                 logoutDialog();
                 break;

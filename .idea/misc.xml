@@ -30,6 +30,7 @@
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/course_list.xml" value="0.20416666666666666" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/events_layout.xml" value="0.33" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/faculty_list.xml" value="0.2028985507246377" />
+        <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/faq_questions.xml" value="0.16822916666666668" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/file_paths.xml" value="0.11927083333333334" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_admin_account.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_admin_home.xml" value="0.20416666666666666" />
@@ -38,6 +39,7 @@
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_create_official.xml" value="0.33" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_edit_profile.xml" value="0.25" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_events.xml" value="0.25" />
+        <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_f_a_qs.xml" value="0.16822916666666668" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_officials_home.xml" value="0.18385416666666668" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_officials_post_notice.xml" value="0.16979166666666667" />
         <entry key="..\:/Android Projects/NoticeBoard/app/src/main/res/layout/fragment_officials_profile.xml" value="0.33" />
