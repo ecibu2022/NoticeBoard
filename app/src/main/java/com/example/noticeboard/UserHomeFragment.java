@@ -249,7 +249,6 @@ public class UserHomeFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 // Filter notices based on the search query
-                Log.d("Search", "Query: " + newText);
                 List<PostNoticeModal> filteredNotices = filterNoticesByTitle(notices, newText);
                 noticeAdapter.setFilteredList(filteredNotices);
                 return true;
@@ -260,7 +259,6 @@ public class UserHomeFragment extends Fragment {
     }
 
     private List<PostNoticeModal> filterNoticesByTitle(List<PostNoticeModal> notices, String query) {
-        Log.d("Search", "Filtering: " + query);
         query = query.toLowerCase(Locale.getDefault());
         List<PostNoticeModal> filteredNotices = new ArrayList<>();
 
