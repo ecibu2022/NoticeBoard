@@ -8,133 +8,139 @@
     android:background="@color/background"
     tools:context=".CreateOfficialFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_layout"
-        android:orientation="vertical"
-        android:layout_margin="15dp"
-        android:padding="12dp">
+        android:layout_height="match_parent">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:text="@string/profile_picture"/>
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_layout"
+            android:orientation="vertical"
+            android:layout_margin="15dp"
+            android:padding="12dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginBottom="-22dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/logo" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="-22dp"
-            android:hint="@string/official_name"
-            app:boxBackgroundColor="@color/white">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="-22dp"
-            android:hint="@string/official_title"
-            app:boxBackgroundColor="@color/white">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="-22dp"
-            android:hint="@string/department"
-            app:boxBackgroundColor="@color/white">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/department"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="-22dp"
-            android:hint="@string/email"
-            app:boxBackgroundColor="@color/white"
-            app:startIconDrawable="@drawable/email"
-            app:startIconTint="@color/gold">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="13dp"
-            android:hint="@string/password"
-            app:boxBackgroundColor="@color/white"
-            app:endIconMode="password_toggle"
-            app:endIconTint="@color/gold"
-            app:startIconDrawable="@drawable/password"
-            app:startIconTint="@color/gold">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/password"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:text="@string/profile_picture"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="-22dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
 
-        <Button
-            android:id="@+id/create"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/create"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="5dp"
-            app:backgroundTint="@color/gold"
-            android:background="@drawable/rounded_button" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="-22dp"
+                android:hint="@string/official_name"
+                app:boxBackgroundColor="@color/white">
 
-    </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="-22dp"
+                android:hint="@string/official_title"
+                app:boxBackgroundColor="@color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="-22dp"
+                android:hint="@string/department"
+                app:boxBackgroundColor="@color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/department"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="-22dp"
+                android:hint="@string/email"
+                app:boxBackgroundColor="@color/white"
+                app:startIconDrawable="@drawable/email"
+                app:startIconTint="@color/gold">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="13dp"
+                android:hint="@string/password"
+                app:boxBackgroundColor="@color/white"
+                app:endIconMode="password_toggle"
+                app:endIconTint="@color/gold"
+                app:startIconDrawable="@drawable/password"
+                app:startIconTint="@color/gold">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/create"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="5dp"
+                app:backgroundTint="@color/gold"
+                android:background="@drawable/rounded_button" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
