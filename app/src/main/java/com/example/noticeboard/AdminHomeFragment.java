@@ -91,28 +91,6 @@ public class AdminHomeFragment extends Fragment {
         return  view;
     }
 
-    public void logoutDialog(){
-        AlertDialog.Builder logout=new AlertDialog.Builder(getContext());
-        logout.setTitle("Logging Out?");
-        logout.setMessage("Please Confirm!");
-        logout.setCancelable(false);
-        logout.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mAuth.signOut();
-                startActivity(new Intent(getContext(), Login.class));
-            }
-        });
-        logout.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getContext(), "Logout Cancelled", Toast.LENGTH_SHORT).show();
-            }
-        });
-        logout.show(); // Show the AlertDialog
-    }
-
-
 //Retrieving the notices based on newest first
     private void sortNoticesByDateTime(List<PostNoticeModal> notices) {
         // Sort the notices in descending order based on date and time (newest to oldest)

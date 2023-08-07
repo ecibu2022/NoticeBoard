@@ -44,7 +44,7 @@ public class EditProfileFragment extends Fragment {
     private ImageView editImage;
     private CircleImageView profile_picture;
     String imageUrl;
-    private TextView full_name, reg_no, faculty, course, email, editName, editEmail;
+    private TextView full_name, reg_no, faculty, course, email, editEmail;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -73,7 +73,6 @@ public class EditProfileFragment extends Fragment {
         email=view.findViewById(R.id.email);
 
         editImage=view.findViewById(R.id.editImage);
-        editName=view.findViewById(R.id.editName);
         editEmail=view.findViewById(R.id.editEmail);
         update_profile=view.findViewById(R.id.update_profile);
 
@@ -92,7 +91,6 @@ public class EditProfileFragment extends Fragment {
 
 //                            Setting into Text Fields
                             Glide.with(getContext()).load(Url).into(editImage);
-                            editName.setText(Name);
                             editEmail.setText(Email);
                 }
             }
@@ -134,11 +132,9 @@ public class EditProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Retrieve the user data from EditTexts
-                String EditName = editName.getText().toString();
                 String EditEmail = editEmail.getText().toString();
 
                 // Update the user data in the Firebase database
-                mDatabase.child(currentUser.getUid()).child("fullName").setValue(EditName);
                 mDatabase.child(currentUser.getUid()).child("email").setValue(EditEmail);
 
                 // Update the email in Firebase Authentication

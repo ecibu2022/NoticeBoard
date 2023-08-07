@@ -30,7 +30,6 @@ import java.util.Calendar;
 public class EventsFragment extends Fragment {
     private AutoCompleteTextView selectDate, selectStartTime, selectEndTime;
     private EditText eventTitle, eventDescription, eventLocation;
-    private ToggleButton toggle_reminder;
     private Button events;
     private DatabaseReference eventRef;
 
@@ -50,7 +49,6 @@ public class EventsFragment extends Fragment {
         selectDate = view.findViewById(R.id.selectDate);
         selectStartTime = view.findViewById(R.id.selectStartTime);
         selectEndTime = view.findViewById(R.id.selectEndTime);
-        toggle_reminder = view.findViewById(R.id.toggle_reminder);
         events = view.findViewById(R.id.events);
 
         eventRef = FirebaseDatabase.getInstance().getReference("events");
@@ -176,6 +174,12 @@ public class EventsFragment extends Fragment {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
                     Toast.makeText(getContext(), "Event Created Successfully", Toast.LENGTH_SHORT).show();
+                    eventTitle.setText(null);
+                    eventDescription.setText(null);
+                    selectDate.setText(null);
+                    selectStartTime.setText(null);
+                    selectEndTime.setText(null);
+                    eventLocation.setText(null);
                 } else {
                     Toast.makeText(getContext(), "Failed to create Event", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();

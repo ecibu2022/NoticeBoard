@@ -383,6 +383,8 @@ public class PostNoticeFragment extends Fragment {
         fileUri = null;
         imageUrl = null;
         fileUrl = null;
+        uploadImage.setImageURI(null);
+        fileEditText.setText(null);
     }
 
     // Get current date and time

@@ -41,7 +41,7 @@ public class OfficialsProfileFragment extends Fragment {
     private ImageView editImage;
     private CircleImageView profile_picture;
     String imageUrl;
-    private TextView full_name, email, editName, editEmail, department;
+    private TextView full_name, email, editEmail, department;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -69,7 +69,6 @@ public class OfficialsProfileFragment extends Fragment {
         department=view.findViewById(R.id.department);
 
         editImage=view.findViewById(R.id.editImage);
-        editName=view.findViewById(R.id.editName);
         editEmail=view.findViewById(R.id.editEmail);
         update_profile=view.findViewById(R.id.update_profile);
 
@@ -83,13 +82,11 @@ public class OfficialsProfileFragment extends Fragment {
                     formContainer.setVisibility(View.VISIBLE);
                     // Retrieve the user data from TextViews
                     String Url=imageUrl;
-                    String Name = full_name.getText().toString();
                     String Email = email.getText().toString();
                     String Department=department.getText().toString();
 
 //                            Setting into Text Fields
                     Glide.with(getContext()).load(Url).into(editImage);
-                    editName.setText(Name);
                     editEmail.setText(Email);
                     department.setText(Department);
                 }
@@ -126,12 +123,10 @@ public class OfficialsProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Retrieve the user data from EditTexts
-                String EditName = editName.getText().toString();
                 String EditEmail = editEmail.getText().toString();
                 String Department=department.getText().toString();
 
                 // Update the user data in the Firebase database
-                mDatabase.child(currentUser.getUid()).child("fullName").setValue(EditName);
                 mDatabase.child(currentUser.getUid()).child("email").setValue(EditEmail);
                 mDatabase.child(currentUser.getUid()).child("department").setValue(Department);
 

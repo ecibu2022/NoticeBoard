@@ -45,7 +45,7 @@ public class ViewEventsFragment extends Fragment {
 
         myEvents = view.findViewById(R.id.availableEvents);
         myEvents.setHasFixedSize(true);
-        myEvents.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        myEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
         events = new ArrayList<>();
 
@@ -84,6 +84,13 @@ public class ViewEventsFragment extends Fragment {
         return view;
     }
 
+
+    private boolean isEventNotificationsEnabled() {
+        // Load event notifications checkbox state from SharedPreferences
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MySettings", Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean("eventNotificationsEnabled", true);
+    }
+
     private void scheduleEventAlarms() {
         AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
 
@@ -95,38 +102,23 @@ public class ViewEventsFragment extends Fragment {
 
                 // Creating an Intent for the AlarmReceiver class that will handle the alarm
                 Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
+                alarmIntent.putExtra("event_title", event.getTitle()); // Pass event title to the AlarmReceiver
 
                 int uniqueId = generateUniqueId();
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), uniqueId, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+                // Use setExactAndAllowWhileIdle for API 23 and above, or setExact for API 19 and above
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+                } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+                } else {
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
+                }
             }
         }
     }
 
-    private boolean isEventNotificationsEnabled() {
-        // Load event notifications checkbox state from SharedPreferences
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MySettings", Context.MODE_PRIVATE);
-        return sharedPreferences.getBoolean("eventNotificationsEnabled", true);
-    }
-
-
-//    private void scheduleEventAlarms() {
-//        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-//
-//        for (CreateEventsModal event : events) {
-//            String eventTime = event.getStartTime();
-//            long eventTimeInMillis = convertTimeToMillis(eventTime);
-//
-//            // Creating an Intent for the AlarmReceiver class that will handle the alarm
-//            Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
-//
-//            int uniqueId = generateUniqueId();
-//            PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), uniqueId, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//            alarmManager.set(AlarmManager.RTC_WAKEUP, eventTimeInMillis, pendingIntent);
-//        }
-//    }
 
     private long convertTimeToMillis(String time) {
         String[] timeParts = time.split(":");

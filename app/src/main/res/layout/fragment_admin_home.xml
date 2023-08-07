@@ -8,32 +8,6 @@
     tools:context=".AdminHomeFragment"
     android:background="@color/notice_bg_color">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/gold"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/logout"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:src="@drawable/logout"
-                android:layout_marginLeft="430dp"
-                android:layout_gravity="end" />
-
-        </androidx.appcompat.widget.Toolbar>
-
-
-    </RelativeLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notices"
         android:layout_width="match_parent"

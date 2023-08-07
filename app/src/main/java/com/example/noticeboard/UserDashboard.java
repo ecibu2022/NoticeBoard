@@ -162,13 +162,6 @@ public class UserDashboard extends AppCompatActivity implements  NavigationView.
                 getSupportActionBar().setTitle("User Profile");
                 break;
 
-            case R.id.settings:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new SettingsFragment()).addToBackStack(String.valueOf(R.id.home))
-                        .commit();
-                getSupportActionBar().setTitle("Settings");
-                break;
-
             case R.id.post:
                 getSupportFragmentManager().beginTransaction().addToBackStack(String.valueOf(R.id.home))
                         .replace(R.id.fragment_container, new PostNoticeFragment())

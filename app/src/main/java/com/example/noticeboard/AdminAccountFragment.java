@@ -41,7 +41,7 @@ public class AdminAccountFragment extends Fragment {
     private ImageView editImage;
     private CircleImageView profile_picture;
     String imageUrl;
-    private TextView full_name, email, editName, editEmail;
+    private TextView full_name, email, editEmail;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -68,7 +68,6 @@ public class AdminAccountFragment extends Fragment {
         email=view.findViewById(R.id.email);
 
         editImage=view.findViewById(R.id.editImage);
-        editName=view.findViewById(R.id.editName);
         editEmail=view.findViewById(R.id.editEmail);
         update_profile=view.findViewById(R.id.update_profile);
 
@@ -82,12 +81,10 @@ public class AdminAccountFragment extends Fragment {
                     formContainer.setVisibility(View.VISIBLE);
                     // Retrieve the user data from TextViews
                     String Url=imageUrl;
-                    String Name = full_name.getText().toString();
                     String Email = email.getText().toString();
 
 //                            Setting into Text Fields
                     Glide.with(getContext()).load(Url).into(editImage);
-                    editName.setText(Name);
                     editEmail.setText(Email);
                 }
             }
@@ -121,11 +118,9 @@ public class AdminAccountFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Retrieve the user data from EditTexts
-                String EditName = editName.getText().toString();
                 String EditEmail = editEmail.getText().toString();
 
                 // Update the user data in the Firebase database
-                mDatabase.child(currentUser.getUid()).child("fullName").setValue(EditName);
                 mDatabase.child(currentUser.getUid()).child("email").setValue(EditEmail);
 
                 // Update the email in Firebase Authentication

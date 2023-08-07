@@ -168,29 +168,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginEnd="13dp"
-                        android:layout_marginBottom="-20dp"
-                        android:hint="@string/name"
-                        app:boxBackgroundColor="@color/white"
-                        app:startIconDrawable="@drawable/person"
-                        app:startIconTint="@color/gold">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="13dp"
                         android:hint="@string/email"
                         app:boxBackgroundColor="@color/white"
                         app:startIconDrawable="@drawable/email"
-                        app:startIconTint="@color/gold">
+                        app:startIconTint="@color/gray">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editEmail"
