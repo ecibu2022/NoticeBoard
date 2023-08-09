@@ -118,9 +118,10 @@ public class OfficialsHomeFragment extends Fragment {
                         for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                             PostNoticeModal myNotices = itemSnapshot.getValue(PostNoticeModal.class);
                             // Check if the notice is submitted by the specific user (based on name)
-                            if (myNotices.getSubmittedBy().equals(userName)) {
+                            if (myNotices.getSubmittedBy() != null && myNotices.getSubmittedBy().equals(userName)) {
                                 notices.add(myNotices);
                             }
+
                         }
                         // Sort the notices list based on date and time (newest on top)
                         sortNoticesByDateTime(notices);
